@@ -1,5 +1,21 @@
 var React = require('react')
 var auth = require('./auth')
+var CmsHeader = require('./navbar');
+
+var Navigation = React.createClass({
+    render: function() {
+        return (
+            <div className="App">
+                <CmsHeader />
+            </div>
+        );
+    }
+});
+
+
+
+
+
 
 module.exports = React.createClass({
    getInitialState: function() {
@@ -35,9 +51,11 @@ module.exports = React.createClass({
 
     render: function() {
         return (
+
             <div>
-            <h1>You are now logged in, {this.state.user.username}</h1>
-            <button onClick={this.logoutHandler}>Log out</button>
+                <Navigation/>
+                <h1>You are now logged in, {this.state.user.username}</h1>
+                <button onClick={this.logoutHandler}>Log out</button>
             </div>
         )        
     }

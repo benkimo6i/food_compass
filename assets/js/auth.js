@@ -37,5 +37,24 @@ module.exports = {
                 })
             }
         })
-    }, 
+    },
+
+    signUp: function(username, email, pass, confirm_pass, cb) {
+        if (pass ===confirm_pass) {
+            var context = this;
+            $.ajax({
+                type: 'POST',
+                url: '/api/users/',
+                data: {
+                    username: username,
+                    email:email,
+                    password: pass,
+                    confirm_pass: confirm_pass,
+                },
+                success: function(res){
+                     context.login(username, pass, cb)
+                }
+            })
+        }
+    },
 }

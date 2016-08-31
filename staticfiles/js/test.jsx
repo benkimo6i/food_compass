@@ -1,33 +1,26 @@
 var React = require('react')
-var auth = require('./auth')
+var ReactBootstrap = require('react-bootstrap');
+var Grid = ReactBootstrap.Grid;
+var Row = ReactBootstrap.Row;
+var Col = ReactBootstrap.Col;
+var Input = ReactBootstrap.Input;
+var Button = ReactBootstrap.Button;
 
 module.exports = React.createClass({
-    contextTypes: {
-        router: React.PropTypes.object.isRequired
-    },
-
-    handleSubmit: function(e) {
-        e.preventDefault()
-
-        var username = this.refs.username.value
-        var pass = this.refs.pass.value
-
-        auth.login(username, pass, (loggedIn) => {
-            this.context.router.replace('/app/')
-        })
-    },
-    
     render: function() {
         return (
-            <div className='row'>
-                <div className='col-md-6'>
-                    <form onSubmit={this.handleSubmit}>
-                        <input type="text" placeholder="username" ref="username"/>
-                        <input type="password" placeholder="password" ref="pass"/>
-                        <input type="submit"/>
-                    </form>
-                </div>
-            </div>
-        )    
+            <Grid>
+                    <Row>
+
+                        <Col xs={6} md={6}>
+                          <Button>Clear</Button>
+                        </Col>
+
+
+                    </Row>
+            </Grid>
+        )
     }
-})
+});
+
+

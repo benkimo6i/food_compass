@@ -5,6 +5,9 @@ var App = require('./app')
 var Login = require('./login')
 var auth = require('./auth')
 var Test = require('./test')
+var AddRestaurant = require('./add_restaurant')
+var RestaurantProfile = require('./restaurant_profile')
+
 
 function requireAuth(nextState, replace) {
     if (!auth.loggedIn()) {
@@ -15,11 +18,14 @@ function requireAuth(nextState, replace) {
     }
 }
 
+
 ReactDOM.render(
     <Router.Router history={Router.browserHistory}>
+        <Router.Route path='/app/add_restaurant/' component={AddRestaurant}/>
+        <Router.Route path='/app/restaurant/:id' component={RestaurantProfile} />
         <Router.Route path='/app/login/' component={Login} />
         <Router.Route path='/app/test/' component={Test} />
-        <Router.Route path='/app/' component={App} onEnter={requireAuth} />
+        <Router.Route name='app' path='/app/' component={App} onEnter={requireAuth} />
     </Router.Router>,
     document.getElementById('app')
 )

@@ -6,14 +6,17 @@ var Login = require('./login')
 var auth = require('./auth')
 var Test = require('./test')
 
+
 function requireAuth(nextState, replace) {
     if (!auth.loggedIn()) {
-        replace({ 
+        replace({
             pathname:'/app/login/',
             state: {nextPathname: '/app/'}
         })
     }
 }
+
+
 
 ReactDOM.render(
     <Router.Router history={Router.browserHistory}>
@@ -21,5 +24,5 @@ ReactDOM.render(
         <Router.Route path='/app/test/' component={Test} />
         <Router.Route path='/app/' component={App} onEnter={requireAuth} />
     </Router.Router>,
-    document.getElementById('app')    
+    document.getElementById('app')
 )
