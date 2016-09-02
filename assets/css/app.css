@@ -6,3 +6,10 @@ body {
         text-align:center;
 }
 
+.poll-row {
+    border-style: solid;
+    border-width: 2px;
+    border-color: green;
+    padding-bottom:2px;
+}
+

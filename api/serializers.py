@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Restaurant, Review,Foodie
+from .models import Restaurant, Review,Foodie, Poll, Vote
 
 import googlemaps
 from datetime import datetime
@@ -168,3 +168,38 @@ class ReviewSerializer(serializers.ModelSerializer):
         return data
 
 
+class PollSerializer(serializers.ModelSerializer):
+    restaurants = RestaurantSerializer(many=True, read_only=True)
+    class Meta:
+        model = Poll
+        # fields = ('id','url','creator','status','restaurants','added')
+        read_only_fields = ('id','url','added')
+class VoteSerializer(serializers.ModelSerializer):
+    foodie = FoodieSerializer('foodie', read_only=True)
+    foodie_pk = serializers.IntegerField(write_only=True)
+    class Meta:
+        model = Vote
+        fields = ('id','url','foodie_pk','choice','foodie','poll')
+        read_only_fields = ('id','url')
+
+    def create(self, validated_data):
+
+        vote = Vote.objects.create(
+            foodie=validated_data['foodie_pk'],
+            choice=validated_data['choice'],
+            poll=validated_data['poll'],
+        )
+        vote.save()
+        return vote
+
+    def validate(self, data):
+        """
+        Check that the start is before the stop.
+        """
+        foodie = Foodie.objects.get(id=data["foodie_pk"])
+        if not Foodie.objects.get(id=data["foodie_pk"]):
+            raise serializers.ValidationError("No such foodie exists")
+        else:
+            print "passes foodie search"
+            data['foodie_pk']=foodie
+        return data

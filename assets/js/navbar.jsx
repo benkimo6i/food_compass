@@ -27,6 +27,9 @@ var CmsHeader = React.createClass({
     goAddRestaurant: function() {
         this.context.router.push('/app/add_restaurant/');
     },
+    goAddPoll: function() {
+        this.context.router.push('/app/add_poll/');
+    },
     contextTypes: {
         router: React.PropTypes.object.isRequired
     },
@@ -80,7 +83,8 @@ var CmsHeader = React.createClass({
                         <Navbar.Collapse>
                           <Nav>
                             <NavItem eventKey={1} onClick={this.returnHome}>Home</NavItem>
-                            <NavItem eventKey={2} onClick={this.goAddRestaurant}>Restaurants</NavItem>
+                            <NavItem eventKey={2} onClick={this.goAddPoll}>Add Poll</NavItem>
+                            <NavItem eventKey={3} onClick={this.goAddRestaurant}>Add Restaurants</NavItem>
 
                           </Nav>
                           <Nav pullRight>
@@ -101,6 +105,11 @@ var CmsHeader = React.createClass({
                           <Navbar.Toggle />
                         </Navbar.Header>
                         <Navbar.Collapse>
+                        <Nav>
+                            <NavItem eventKey={1} onClick={this.returnHome}>Home</NavItem>
+                            <NavItem eventKey={2} onClick={this.goAddPoll}>Add Poll</NavItem>
+
+                          </Nav>
 
                           <Nav pullRight>
                             <NavItem eventKey={2} href={this.state.user.username}>{this.state.user.username}</NavItem>

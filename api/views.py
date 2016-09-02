@@ -1,12 +1,12 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, response, permissions
-from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer
+from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
 from .permissions import IsStaffOrTargetUser
 from django.http import JsonResponse
 from rest_framework import filters
 
-from .models import Restaurant, Review, Foodie
+from .models import Restaurant, Review, Foodie, Poll, Vote
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
@@ -50,7 +50,6 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     # permission_classes = (permissions.IsAuthenticated,)
     #
     # def get_permissions(self):
-    #     # allow non-authenticated user to create via POST
     #     return (IsAdminUser() if self.request.method == 'POST'
     #             else permissions.IsAuthenticated()),
     def get_queryset(self):
@@ -92,7 +91,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
     filter_fields = ('subject','restaurant','foodie')
     pagination_class = LimitOffsetPagination
     ordering_fields = ('subject', 'added', 'score')
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
     #
     # def get_permissions(self):
     #     # allow non-authenticated user to create via POST
@@ -110,6 +109,22 @@ class FoodieViewSet(viewsets.ModelViewSet):
     queryset = Foodie.objects.all()
     serializer_class = FoodieSerializer
     filter_backends = (filters.DjangoFilterBackend,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
+class PollViewSet(viewsets.ModelViewSet):
+    queryset = Poll.objects.all()
+    serializer_class = PollSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+
+
+    # permission_classes = (permissions.IsAuthenticated,)
+    # filter_fields = ('subject','restaurant','foodie')
+
+class VoteViewSet(viewsets.ModelViewSet):
+    queryset = Vote.objects.all()
+    serializer_class = VoteSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    # permission_classes = (permissions.IsAuthenticated,)
     # filter_fields = ('subject','restaurant','foodie')
 
 

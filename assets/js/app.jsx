@@ -2,6 +2,7 @@ var React = require('react')
 var auth = require('./auth')
 var CmsHeader = require('./navbar');
 var RestaurantPage = require('./restaurant');
+var PollPage = require('./polls');
 
 var Navigation = React.createClass({
     render: function() {
@@ -18,6 +19,15 @@ var Restaurant = React.createClass({
         return (
             <div className="App">
                 <RestaurantPage/>
+            </div>
+        );
+    }
+});
+var Polls = React.createClass({
+    render: function() {
+        return (
+            <div className="App">
+                <PollPage/>
             </div>
         );
     }
@@ -60,6 +70,7 @@ module.exports = React.createClass({
 
             <div>
                 <Navigation/>
+                <Polls/>
                 <Restaurant/>
             </div>
         )        

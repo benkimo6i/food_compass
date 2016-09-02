@@ -5,6 +5,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 # Create your models here.
 
+POLLS_STATUS_CHOICES = (('open', 'Open'),
+                        ('closed', 'Closed'),
+                        )
+
 
 
 class Foodie(models.Model):
@@ -54,3 +58,20 @@ def foodie_saved_receiver(sender, instance, created, *args, **kwargs):
         print new_foodie
 
 post_save.connect(foodie_saved_receiver,sender = User)
+
+class Poll(models.Model):
+    title = models.CharField(max_length=80, null=False)
+    description = models.CharField(max_length=320, null=False)
+    creator = models.ForeignKey(Foodie)
+    added = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=120, choices=POLLS_STATUS_CHOICES, default='open')
+    Restaurants = models.ManyToManyField(Restaurant)
+
+    def __unicode__(self):
+        return self.title
+
+
+class Vote(models.Model):
+    foodie = models.ForeignKey(Foodie)
+    poll = models.ForeignKey(Poll)
+    choice = models.ForeignKey(Restaurant)
