@@ -2,9 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Circle, Restaurant, Review
-
-
+from .models import Restaurant, Review,Foodie
 
 import googlemaps
 from datetime import datetime
@@ -12,11 +10,12 @@ from datetime import datetime
 
 class UserSerializer(serializers.ModelSerializer):
     confirm_pass = serializers.CharField(allow_blank=False, write_only=True)
+    foodie_id = serializers.URLField(source='foodie.id', allow_blank=True)
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'email','is_staff','confirm_pass')
+        fields = ('id', 'username', 'password', 'email','is_staff','confirm_pass','foodie_id')
         write_only_fields = ('password','confirm_pass')
-        read_only_fields = ('id','is_staff')
+        read_only_fields = ('id','is_staff','foodie')
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -40,39 +39,10 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email already registered")
         elif password1 and password1 != password2:
             raise serializers.ValidationError("Passwords don't match")
-        return data
-
-class UserSerializer(serializers.ModelSerializer):
-    confirm_pass = serializers.CharField(allow_blank=False, write_only=True)
-    class Meta:
-        model = User
-        fields = ('id', 'username', 'password', 'email','is_staff','confirm_pass')
-        write_only_fields = ('password','confirm_pass')
-        read_only_fields = ('id','is_staff')
-
-    def create(self, validated_data):
-        user = User.objects.create(
-            username=validated_data['username'],
-            email=validated_data['email'],
-        )
-        user.set_password(validated_data['password'])
-        user.save()
-
-        return user
-
-    def validate(self, data):
-        print(data)
-        user = User.objects.filter(username=data['username'])
-        user2 = User.objects.filter(email=data['email'])
-        password1 = data['password']
-        password2 = data['confirm_pass']
-        if user:
-            raise serializers.ValidationError("Username exist")
-        elif user2:
-            raise serializers.ValidationError("Email already registered")
-        elif password1 and password1 != password2:
-            raise serializers.ValidationError("Passwords don't match")
-        return data
+        else:
+            data['username'] = data['username'].lower()
+            data['email'] = data['email'].lower()
+            return data
 
 class UserRegistrationSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -99,10 +69,11 @@ class UserRegistrationSerializer(serializers.Serializer):
 class RestaurantSerializer(serializers.ModelSerializer):
     lat = None
     log = None
+    avg_review = serializers.DecimalField(max_digits=4, decimal_places=2, read_only=True)
     class Meta:
         model = Restaurant
-        fields = ('id','url', 'name', 'description', 'street','city','state')
-        read_only_fields = ('id','url',)
+        fields = ('id','url', 'name', 'description', 'street','city','state','avg_review')
+        read_only_fields = ('id','url','review_average','avg_review')
 
     def create(self, validated_data):
         restaurant = Restaurant.objects.create(
@@ -144,26 +115,56 @@ class RestaurantSerializer(serializers.ModelSerializer):
         print("validate restaurant - 1")
         return data
 
-class ReviewSerializer(serializers.ModelSerializer):
+class FoodieSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer('user', read_only=True)
     class Meta:
-        model = Review
-        fields = ('id','url', 'subject','restaurant','wouldGo','score','comment')
+        model = Foodie
+        fields = ('id','url','user')
         read_only_fields = ('id','url')
 
-class CircleSerializer(serializers.ModelSerializer):
+class ReviewSerializer(serializers.ModelSerializer):
+    foodie = FoodieSerializer('foodie', read_only=True)
+    foodie_pk = serializers.IntegerField(write_only=True)
     class Meta:
-        model = Circle
-        fields = ('id', 'name')
+        model = Review
+        fields = ('id','url','foodie','foodie_pk', 'subject','restaurant','wouldGo','score','comment','added')
+        read_only_fields = ('id','url','added')
 
     def create(self, validated_data):
 
-        print("creating cirle - 0")
-        circle = Circle.objects.create(
-            name=validated_data['name'],
-            location=validated_data['location'],
+        review = Review.objects.create(
+            foodie=validated_data['foodie_pk'],
+            subject=validated_data['subject'],
+            restaurant=validated_data['restaurant'],
+            wouldGo=validated_data['wouldGo'],
+            score=validated_data['score'],
+            comment=validated_data['comment'],
         )
-        print("creating cirle - 1")
-        circle.save()
+        review.save()
+        return review
 
-        return circle
+    def validate(self, data):
+        """
+        Check that the start is before the stop.
+        """
+        if isinstance(data["wouldGo"], (bool)):
+            pass
+        elif data["wouldGo"].lower() == 'false':
+            data["wouldGo"]=False
+        elif data["wouldGo"].lower() == 'true':
+            data["wouldGo"]=True
+        else:
+            raise serializers.ValidationError("incorrect Boolean value for wouldGo")
+
+        foodie = Foodie.objects.get(id=data["foodie_pk"])
+        if not Foodie.objects.get(id=data["foodie_pk"]):
+            raise serializers.ValidationError("No such foodie exists")
+        else:
+            print "passes foodie search"
+            data['foodie_pk']=foodie
+
+        print data["wouldGo"]
+        print("check review creation 1")
+        return data
+
 

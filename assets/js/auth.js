@@ -27,7 +27,7 @@ module.exports = {
             type: 'POST',
             url: '/api/obtain-auth-token/',
             data: {
-                username: username,
+                username: username.toLowerCase(),
                 password: pass
             },
             success: function(res){

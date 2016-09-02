@@ -19,7 +19,7 @@ var Review = React.createClass({
         <h2 className="ReviewAuthor">
           {this.props.subject}
         </h2>
-        <h2>score: {this.props.score}</h2>
+        <h3>score: {this.props.score}</h3>
         <span>{this.props.children}</span>
       </div>
     );

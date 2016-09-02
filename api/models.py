@@ -7,17 +7,8 @@ from django.db.models.signals import post_save
 
 
 
-class Circle(models.Model):
-    name = models.CharField(max_length = 120)
-    location = models.CharField(max_length = 400)
-
-    def __unicode__(self):
-        return self.name
-
 class Foodie(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    circles = models.ManyToManyField(Circle)
-
     def __unicode__(self):
         return self.user.username
 
@@ -29,6 +20,8 @@ class Restaurant(models.Model):
     state = models.CharField(max_length=120)
     lat = models.DecimalField(max_digits=12,decimal_places=10)
     log = models.DecimalField(max_digits=12,decimal_places=10)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
     def __unicode__(self):
@@ -40,11 +33,14 @@ class Restaurant(models.Model):
 
 
 class Review(models.Model):
+    foodie = models.ForeignKey(Foodie)
     subject = models.CharField(max_length=80, null=False)
     restaurant = models.ForeignKey(Restaurant)
     wouldGo = models.BooleanField(default=True)
     score = models.DecimalField(decimal_places=2, max_digits=10, null=True, blank=True)
     comment = models.CharField(max_length=800, null=True)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
 
 def foodie_saved_receiver(sender, instance, created, *args, **kwargs):

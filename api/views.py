@@ -1,12 +1,14 @@
 from django.contrib.auth.models import User
 from rest_framework import viewsets, response, permissions
-from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer
+from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
 from .permissions import IsStaffOrTargetUser
 from django.http import JsonResponse
 from rest_framework import filters
 
-from .models import Restaurant, Review
+from .models import Restaurant, Review, Foodie
+
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
 from django.db.models import Avg
 
@@ -42,12 +44,20 @@ class UserViewSet(viewsets.ModelViewSet):
 class RestaurantViewSet(viewsets.ModelViewSet):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
+    filter_backends = (filters.DjangoFilterBackend,filters.OrderingFilter)
+    pagination_class = LimitOffsetPagination
+    ordering_fields = ('added', 'avg_review')
     # permission_classes = (permissions.IsAuthenticated,)
     #
     # def get_permissions(self):
     #     # allow non-authenticated user to create via POST
     #     return (IsAdminUser() if self.request.method == 'POST'
     #             else permissions.IsAuthenticated()),
+    def get_queryset(self):
+        return Restaurant.objects.annotate(
+            avg_review=Avg('review__score')
+        )
+
     def retrieve(self, request, pk=None):
         restaurant = Restaurant.objects.get(id=pk)
         custom_data = {
@@ -75,10 +85,13 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     #     return super(RestaurantViewSet, self).retrieve(request, pk)
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    #/api/reviews/?ordering=score&limit=1&offset=0
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    filter_backends = (filters.DjangoFilterBackend,)
-    filter_fields = ('subject','restaurant',)
+    filter_backends = (filters.DjangoFilterBackend,filters.OrderingFilter)
+    filter_fields = ('subject','restaurant','foodie')
+    pagination_class = LimitOffsetPagination
+    ordering_fields = ('subject', 'added', 'score')
     # permission_classes = (permissions.IsAuthenticated,)
     #
     # def get_permissions(self):
@@ -93,11 +106,12 @@ class ReviewViewSet(viewsets.ModelViewSet):
     #     else:
     #         return
 
+class FoodieViewSet(viewsets.ModelViewSet):
+    queryset = Foodie.objects.all()
+    serializer_class = FoodieSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    # filter_fields = ('subject','restaurant','foodie')
 
-# def RestaurantChooseSet(request, StaffRequiredMixin):
-#
-#
-#     return JsonResponse()
 
 
 

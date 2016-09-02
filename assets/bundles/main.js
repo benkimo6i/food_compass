@@ -35296,7 +35296,7 @@
 	            type: 'POST',
 	            url: '/api/obtain-auth-token/',
 	            data: {
-	                username: username,
+	                username: username.toLowerCase(),
 	                password: pass
 	            },
 	            success: function (res) {
@@ -35415,7 +35415,7 @@
 	                        React.createElement(
 	                            'a',
 	                            { onClick: this.returnHome },
-	                            'React-Bootstrap'
+	                            'Food Compass'
 	                        )
 	                    ),
 	                    React.createElement(Navbar.Toggle, null)
@@ -35467,7 +35467,7 @@
 	                        React.createElement(
 	                            'a',
 	                            { href: '' },
-	                            'React-Bootstrap'
+	                            'Food Compass'
 	                        )
 	                    ),
 	                    React.createElement(Navbar.Toggle, null)
@@ -54326,18 +54326,30 @@
 	      'div',
 	      { className: 'restaurant' },
 	      React.createElement(
-	        'a',
-	        null,
+	        Row,
+	        { className: 'text-align-center' },
 	        React.createElement(
-	          'h2',
-	          { className: 'restaurantName', onClick: this.MoveToProfile, value: this.props.url },
-	          this.props.name
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            'a',
+	            null,
+	            React.createElement(
+	              'h2',
+	              { className: 'restaurantName', onClick: this.MoveToProfile, value: this.props.url },
+	              this.props.name
+	            )
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Review average: ',
+	            this.props.avg_score,
+	            '/10',
+	            React.createElement('br', null),
+	            this.props.children
+	          )
 	        )
-	      ),
-	      React.createElement(
-	        'span',
-	        null,
-	        this.props.children
 	      )
 	    );
 	  }
@@ -54346,16 +54358,39 @@
 	var RestaurantPage = React.createClass({
 	  displayName: 'RestaurantPage',
 
+	  updateSort: function (event) {
+	    console.log("sort update");
+	    if (event.target.value == "score") {
+	      this.setState({ sort: "score" }, function () {
+	        console.log(this.state.sort);
+	        this.loadRestaurantsFromServer();
+	      });
+	    } else if (event.target.value == "added") {
+	      this.setState({ sort: "added" }, function () {
+	        console.log(this.state.sort);
+	        this.loadRestaurantsFromServer();
+	      });
+	    }
+	  },
 	  loadRestaurantsFromServer: function () {
+	    var restaurants_url = "/api/restaurants/";
+	    if (this.state.sort == "score") {
+	      console.log("sort by score");
+	      restaurants_url = restaurants_url + "?ordering=avg_review";
+	    } else if (this.state.sort == "added") {
+	      console.log("sort by added");
+	      restaurants_url = restaurants_url + "?ordering=added";
+	    }
 	    $.ajax({
 	      method: 'GET',
-	      url: '/api/restaurants/',
+	      url: restaurants_url,
 	      dataType: 'json',
 	      headers: {
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
 	        this.setState({ data: data });
+	        console.log(data);
 	      }.bind(this),
 	      error: function (xhr, status, err) {
 	        console.error(this.props.url, status, err.toString());
@@ -54363,7 +54398,10 @@
 	    });
 	  },
 	  getInitialState: function () {
-	    return { data: [] };
+	    return { data: [],
+	      sort: [],
+	      order: []
+	    };
 	  },
 	  componentDidMount: function () {
 	    this.loadRestaurantsFromServer();
@@ -54371,14 +54409,34 @@
 
 	  render: function () {
 	    return React.createElement(
-	      'div',
-	      { className: 'restaurantPage' },
+	      Row,
+	      { className: 'text-align-center' },
 	      React.createElement(
-	        'h1',
-	        null,
-	        'Restaurants'
-	      ),
-	      React.createElement(RestaurantList, { data: this.state.data })
+	        Col,
+	        { xs: 12, md: 12 },
+	        React.createElement(
+	          'h1',
+	          null,
+	          'Restaurants'
+	        ),
+	        React.createElement(
+	          'span',
+	          null,
+	          'Sort by: ',
+	          React.createElement(
+	            Button,
+	            { value: 'score', onClick: this.updateSort },
+	            'Score'
+	          ),
+	          ' ',
+	          React.createElement(
+	            Button,
+	            { value: 'added', onClick: this.updateSort },
+	            'Date'
+	          )
+	        ),
+	        React.createElement(RestaurantList, { data: this.state.data })
+	      )
 	    );
 	  }
 	});
@@ -54396,7 +54454,7 @@
 	    var restaurantNodes = this.props.data.map(function (restaurant) {
 	      return React.createElement(
 	        Restaurant,
-	        { name: restaurant.name, key: restaurant.id, url: restaurant.id, handleMoveToProfile: this.goToRestaurantProfile },
+	        { name: restaurant.name, avg_score: restaurant.avg_review, key: restaurant.id, url: restaurant.id, handleMoveToProfile: this.goToRestaurantProfile },
 	        restaurant.description
 	      );
 	    }, this);
@@ -54797,6 +54855,8 @@
 	var ReactDOM = __webpack_require__(158);
 	var CmsHeader = __webpack_require__(225);
 	var RestaurantPage = __webpack_require__(479);
+	var ControlLabel = ReactBootstrap.ControlLabel;
+	var Checkbox = ReactBootstrap.Checkbox;
 
 	var Navigation = React.createClass({
 	  displayName: 'Navigation',
@@ -54823,15 +54883,33 @@
 	        this.props.subject
 	      ),
 	      React.createElement(
-	        'h2',
+	        'span',
+	        null,
+	        React.createElement(
+	          'em',
+	          null,
+	          'By: ',
+	          this.props.foodie_name
+	        ),
+	        ' on ',
+	        this.props.added_on
+	      ),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'span',
 	        null,
 	        'score: ',
-	        this.props.score
+	        this.props.score,
+	        '/10'
 	      ),
 	      React.createElement(
 	        'span',
 	        null,
-	        this.props.children
+	        React.createElement(
+	          'p',
+	          null,
+	          this.props.children
+	        )
 	      )
 	    );
 	  }
@@ -54841,17 +54919,24 @@
 	  displayName: 'ReviewBox',
 
 	  loadReviewsFromServer: function () {
+	    var reviews_url = "/api/reviews/";
+	    if (this.state.sort == "score") {
+	      reviews_url = reviews_url + "?ordering=score";
+	    } else if (this.state.sort == "added") {
+	      reviews_url = reviews_url + "?ordering=added";
+	    }
 	    console.log("pk is: " + String(this.props.restaurantPk));
 	    console.log(typeof this.props.restaurantPk);
 	    $.ajax({
 	      method: 'GET',
-	      url: '/api/reviews/',
+	      url: reviews_url,
 	      data: { restaurant: this.props.restaurantPk },
 	      headers: {
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
 	        console.log("reviews are loaded");
+	        console.log(typeof data);
 	        console.log(data);
 	        this.setState({ data: data });
 	      }.bind(this),
@@ -54861,13 +54946,8 @@
 	    });
 	  },
 	  handleReviewSubmit: function (Review) {
+	    console.log("calling ajax post to submit review");
 	    var Reviews = this.state.data;
-	    // Optimistically set an id on the new Review. It will be replaced by an
-	    // id generated by the server. In a production application you would likely
-	    // not use Date.now() for this and would have a more robust system in place.
-	    Review.id = Date.now();
-	    var newReviews = Reviews.concat([Review]);
-	    this.setState({ data: newReviews });
 	    $.ajax({
 	      method: 'POST',
 	      url: '/api/reviews/',
@@ -54877,7 +54957,12 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
-	        this.setState({ data: data });
+	        console.log("Review Submit successful");
+	        console.log(typeof data);
+	        console.log(data);
+	        var newReviews = Reviews.concat([data]);
+	        this.setState({ data: newReviews });
+	        this.props.handleAverageScore();
 	      }.bind(this),
 	      error: function (xhr, status, err) {
 	        this.setState({ data: Reviews });
@@ -54885,8 +54970,29 @@
 	      }.bind(this)
 	    });
 	  },
+	  updateSort: function (event) {
+	    console.log("sort update");
+	    if (event.target.value == "score") {
+	      this.setState({ sort: "score" }, function () {
+	        console.log(this.state.sort);
+	        this.loadReviewsFromServer();
+	      });
+	    } else if (event.target.value == "added") {
+	      this.setState({ sort: "added" }, function () {
+	        console.log(this.state.sort);
+	        this.loadReviewsFromServer();
+	      });
+	    }
+	  },
 	  getInitialState: function () {
-	    return { data: [], url_param: this.props.restaurantPk };
+	    return {
+	      data: [],
+	      url_param: this.props.restaurantPk,
+	      limit: 5,
+	      offset: 0,
+	      sort: []
+
+	    };
 	  },
 	  componentDidMount: function () {
 	    console.log("review starts");
@@ -54895,13 +55001,50 @@
 	  render: function () {
 	    return React.createElement(
 	      'div',
-	      { className: 'ReviewBox text-align-center\'' },
+	      { className: 'ReviewBox' },
 	      React.createElement(
-	        'h1',
-	        null,
-	        'Reviews'
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          React.createElement(
+	            'h1',
+	            null,
+	            'Reviews'
+	          )
+	        )
 	      ),
-	      React.createElement(ReviewList, { data: this.state.data })
+	      React.createElement(
+	        Col,
+	        { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	        React.createElement(
+	          'span',
+	          null,
+	          'Sort by: ',
+	          React.createElement(
+	            Button,
+	            { value: 'score', onClick: this.updateSort },
+	            'Score'
+	          ),
+	          ' ',
+	          React.createElement(
+	            Button,
+	            { value: 'added', onClick: this.updateSort },
+	            'Date'
+	          )
+	        )
+	      ),
+	      React.createElement(ReviewList, { data: this.state.data }),
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          React.createElement(ReviewForm, { restaurant_pk: this.props.restaurantPk, onReviewSubmit: this.handleReviewSubmit })
+	        )
+	      )
 	    );
 	  }
 	});
@@ -54913,7 +55056,7 @@
 	    var reviewNodes = this.props.data.map(function (review) {
 	      return React.createElement(
 	        Review,
-	        { subject: review.subject, key: review.id, url: review.url, score: review.score },
+	        { subject: review.subject, key: review.id, url: review.url, score: review.score, foodie_name: review.foodie.user.username, added_on: review.added },
 	        review.comment
 	      );
 	    }, this);
@@ -54932,75 +55075,121 @@
 	var ReviewForm = React.createClass({
 	  displayName: 'ReviewForm',
 
+	  componentDidMount: function () {
+	    this.loadUserData();
+	  },
+	  loadFoodieData: function (foodie_id) {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/foodies/' + String(foodie_id) + '/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        console.log("loading Foodie in form");
+	        this.setState({ foodie: res });
+	        console.log(this.state.foodie);
+	      }.bind(this)
+	    });
+	  },
+	  loadUserData: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/users/i/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        console.log("loading user in form");
+	        this.setState({ user: res });
+	        console.log("foodie id: " + String(this.state.user.foodie_id));
+	        this.loadFoodieData(this.state.user.foodie_id);
+	      }.bind(this)
+	    });
+	  },
 	  getInitialState: function () {
-	    return { subject: '', restaurant_id: this.props.restaurant_id, wouldGo: '', score: '', comment: '' };
+	    return {
+	      would_go_checked: false,
+	      user: [],
+	      foodie: []
+	    };
 	  },
-	  handleSubjectChange: function (e) {
-	    this.setState({ subject: e.target.value });
-	  },
-	  handlewouldGoChange: function (e) {
-	    if (e.checked) {
-	      this.setState({ wouldGo: true });
-	    } else {
-	      this.setState({ wouldGo: false });
-	    }
-	  },
-	  handleScoreChange: function (e) {
-	    this.setState({ score: e.target.value });
-	  },
-	  handleCommentChange: function (e) {
-	    this.setState({ comment: e.target.value });
+	  handleWouldGO: function () {
+	    console.log("handle would go called");
+	    this.setState({
+	      would_go_checked: !this.state.complete
+	    });
 	  },
 	  handleSubmit: function (e) {
 	    e.preventDefault();
-	    var subject = this.state.subject.trim();
-	    var score = this.state.score;
-	    var restaurant_id = this.state.restaurant_id;
-	    var wouldGo = this.state.wouldGo;
-	    var comment = this.state.comment.trim();
+	    var subject = ReactDOM.findDOMNode(this.refs.subject).value;
+	    var score = parseFloat(ReactDOM.findDOMNode(this.refs.score).value);
+	    var restaurant_id = parseInt(this.props.restaurant_pk);
+	    var foodie_id = this.state.user.foodie_id;
+	    var wouldGo = ReactDOM.findDOMNode(this.refs.would_go).value;
+	    var comment = ReactDOM.findDOMNode(this.refs.comment).value;
 	    if (!subject || !score || !restaurant_id || !wouldGo || !comment) {
 	      return;
-	    }
-	    this.props.onReviewSubmit({ subject: subject, score: score, restaurant_id: restaurant_id, wouldGo: true, comment: comment });
-	    this.setState({ subject: '', score: '', wouldGo: '', comment: '' });
+	    };
+	    this.props.onReviewSubmit({ subject: subject, score: score, restaurant: restaurant_id, wouldGo: true, comment: comment, foodie_pk: foodie_id });
+	    console.log("grabbed values");
 	  },
 	  render: function () {
 	    return React.createElement(
-	      'form',
-	      { className: 'commentForm', onSubmit: this.handleSubmit },
+	      'div',
+	      null,
 	      React.createElement(
-	        FormGroup,
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            'h1',
+	            null,
+	            'Post a Review:'
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        'label',
 	        null,
-	        React.createElement(FormControl, {
-	          type: 'text',
-	          placeholder: 'Subject',
-	          value: this.state.subject,
-	          onChange: this.handleSubjectChange
-	        }),
-	        React.createElement('br', null),
-	        React.createElement(FormControl, {
-	          type: 'number',
-	          placeholder: 'score',
-	          value: this.state.score,
-	          onChange: this.handleScoreChange
-	        }),
-	        React.createElement('br', null),
-	        React.createElement(FormControl, {
-	          type: 'text',
-	          placeholder: 'comment',
-	          value: this.state.comment,
-	          onChange: this.handleCommentChange
-	        }),
-	        React.createElement('br', null),
-	        React.createElement(FormControl, {
-	          onClick: this.handlewouldGoChange(this), type: 'checkbox', name: 'wouldGo',
-	          value: this.state.wouldGo
-	        }),
-	        React.createElement('br', null),
+	        React.createElement('input', { type: 'checkbox', ref: 'would_go', onChange: this.handleWouldGO, defaultChecked: this.state.would_go_checked }),
+	        'Would Go Again!'
+	      ),
+	      React.createElement(
+	        'form',
+	        { onSubmit: this.handleSubmit },
+	        React.createElement(
+	          FormGroup,
+	          null,
+	          React.createElement(
+	            ControlLabel,
+	            null,
+	            'Subject'
+	          ),
+	          React.createElement(FormControl, { type: 'text', placeholder: 'Subject', ref: 'subject' }),
+	          React.createElement(
+	            ControlLabel,
+	            null,
+	            'Score'
+	          ),
+	          React.createElement(FormControl, { type: 'number', placeholder: 'Score', ref: 'score' }),
+	          React.createElement(
+	            ControlLabel,
+	            null,
+	            'Comment'
+	          ),
+	          React.createElement(FormControl, { type: 'textarea', placeholder: 'Comment', ref: 'comment' }),
+	          React.createElement('br', null),
+	          ' '
+	        ),
 	        React.createElement(
 	          Button,
 	          { type: 'submit' },
-	          'Submit'
+	          'Post'
 	        )
 	      )
 	    );
@@ -55010,6 +55199,23 @@
 	var RestaurantProfile = React.createClass({
 	  displayName: 'RestaurantProfile',
 
+	  updateAverage: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/restaurants/' + this.state.url_param,
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        this.setState({ average_score: data.average_score });
+	        console.log("restaurant average is updated");
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
 	  loadRestaurantsFromServer: function () {
 	    $.ajax({
 	      method: 'GET',
@@ -55067,8 +55273,9 @@
 	          React.createElement(
 	            'span',
 	            null,
-	            'Average Score: ',
-	            this.state.average_score
+	            'Review average: ',
+	            this.state.average_score,
+	            '/10'
 	          ),
 	          React.createElement('br', null),
 	          React.createElement(
@@ -55080,8 +55287,8 @@
 	      ),
 	      React.createElement(
 	        Row,
-	        { className: 'text-align-center' },
-	        React.createElement(ReviewBox, { restaurantPk: this.state.url_param })
+	        null,
+	        React.createElement(ReviewBox, { restaurantPk: this.state.url_param, handleAverageScore: this.updateAverage })
 	      )
 	    );
 	  }

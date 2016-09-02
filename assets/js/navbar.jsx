@@ -73,7 +73,7 @@ var CmsHeader = React.createClass({
                       <Navbar>
                         <Navbar.Header>
                           <Navbar.Brand>
-                            <a onClick={this.returnHome}>React-Bootstrap</a>
+                            <a onClick={this.returnHome}>Food Compass</a>
                           </Navbar.Brand>
                           <Navbar.Toggle />
                         </Navbar.Header>
@@ -96,7 +96,7 @@ var CmsHeader = React.createClass({
                       <Navbar>
                         <Navbar.Header>
                           <Navbar.Brand>
-                            <a href="">React-Bootstrap</a>
+                            <a href="">Food Compass</a>
                           </Navbar.Brand>
                           <Navbar.Toggle />
                         </Navbar.Header>
