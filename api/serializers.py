@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 from .models import Restaurant, Review,Foodie, Poll, Vote
 
 import googlemaps
-from datetime import datetime
 
 
 class UserSerializer(serializers.ModelSerializer):

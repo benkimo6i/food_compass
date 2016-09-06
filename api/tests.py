@@ -1,11 +1,9 @@
 from django.test import TestCase
 from django.test.client import Client
 from django.contrib.auth.models import User
-from rest_framework.reverse import reverse
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.test import APITestCase
-import json
 from api.models import Foodie,Restaurant, Poll, Vote
 
 # Create your tests here.
