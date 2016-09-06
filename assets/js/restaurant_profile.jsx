@@ -227,7 +227,7 @@ var ReviewForm = React.createClass({
                 <FormGroup>
                     <ControlLabel>Subject</ControlLabel>
                     <FormControl type="text" placeholder="Subject" ref="subject" />
-                    <ControlLabel>Score</ControlLabel>
+                    <ControlLabel>Score (Out of 10)</ControlLabel>
                     <FormControl type="number" placeholder="Score" ref="score" />
                     <ControlLabel>Comment</ControlLabel>
                     <FormControl type="textarea" placeholder="Comment" ref="comment" />

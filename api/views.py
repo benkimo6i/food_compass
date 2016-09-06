@@ -51,8 +51,13 @@ class RestaurantViewSet(viewsets.ModelViewSet):
         custom_data = {
             'restaurant': RestaurantSerializer(restaurant,context={'request':request}).data
         }
+        avg_score = 0
+        try:
+            avg_score = format(restaurant.review_set.aggregate(Avg('score')).values()[0], '.2f')
+        except:
+            pass
         custom_data.update({
-            'average_score' : format(restaurant.review_set.aggregate(Avg('score')).values()[0], '.2f')
+            'average_score' : avg_score
         })
         return response.Response(custom_data)
 

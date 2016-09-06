@@ -56009,7 +56009,7 @@
 	          React.createElement(
 	            ControlLabel,
 	            null,
-	            'Score'
+	            'Score (Out of 10)'
 	          ),
 	          React.createElement(FormControl, { type: 'number', placeholder: 'Score', ref: 'score' }),
 	          React.createElement(
