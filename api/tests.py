@@ -44,11 +44,24 @@ class RestaurantAdminTests(TestCase):
         Ensure admin can create a new Restaurant object.
         """
         def setUp(self):
+            #staff user
             self.user = User.objects.create(username= 'admin_user', email='test@test.com', password='123qazwsx', is_staff=True)
             self.token = Token.objects.get(user=self.user).key
             self.c = Client()
 
-        #admin should get 201.
+            #non-staff user
+            self.non_admin_user = User.objects.create(username= 'non_admin_user', email='test2@test.com', password='123qazwsx')
+            self.non_admin_user_token = Token.objects.get(user=self.non_admin_user).key
+            self.c2 = Client()
+
+        #non-staff should get 403.
+        def test_non_admin_403_create_restaurant(self):
+            header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.non_admin_user_token)}
+            data =  {"name": "test_restaurant","description": "test test","street": "147-45 84th ave","city": "briarwood","state": "NY"}
+            response = self.client.post('/api/restaurants/', data, format='json', **header)
+            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, "REST token-auth failed - "+str(response.status_code))
+
+        #staff users should get 201.
         def test_create_restaurant(self):
             header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token)}
             data =  {"name": "test_restaurant","description": "test test","street": "147-45 84th ave","city": "briarwood","state": "NY"}
