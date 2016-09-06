@@ -67,11 +67,11 @@
 	ReactDOM.render(React.createElement(
 	    Router.Router,
 	    { history: Router.browserHistory },
-	    React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant, onEnter: requireAuth }),
-	    React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll, onEnter: requireAuth }),
-	    React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile, onEnter: requireAuth }),
-	    React.createElement(Router.Route, { path: '/app/login/', component: Login, onEnter: requireAuth }),
-	    React.createElement(Router.Route, { path: '/app/test/', component: Test, onEnter: requireAuth }),
+	    React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant }),
+	    React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll }),
+	    React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile }),
+	    React.createElement(Router.Route, { path: '/app/login/', component: Login }),
+	    React.createElement(Router.Route, { path: '/app/test/', component: Test }),
 	    React.createElement(Router.Route, { name: 'app', path: '/app/', component: App, onEnter: requireAuth })
 	), document.getElementById('app'));
 

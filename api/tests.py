@@ -116,6 +116,7 @@ class VoteTests(APITestCase):
             self.assertEqual(Vote.objects.filter(foodie=self.foodie)[0].choice, self.choice)
             self.assertEqual(Vote.objects.filter(foodie=self.foodie)[0].foodie, self.foodie)
 
+        #only owner of the vote can edit the vote
         def test_edit_vote(self):
             header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token2)}
             data =  {"poll": self.poll.id, "choice": self.choice2.id, "foodie_pk": self.foodie2.id}
@@ -126,15 +127,18 @@ class VoteTests(APITestCase):
             self.assertEqual(Vote.objects.get().choice, self.choice2)
             self.assertEqual(Vote.objects.get().foodie, self.foodie2)
 
-        #only owner of the vote can edit the vote - will return 403 forbidden
-        def test_edit_vote(self):
+        #only owner of the vote can edit the vote - will return 403 forbidden if put request is submitted by someone else
+        def test_403_edit_vote(self):
             header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token)}
             data =  {"poll": self.poll.id, "choice": self.choice2.id, "foodie_pk": self.foodie2.id}
+            print(data)
             response = self.client.put('/api/votes/'+str( self.vote_to_be_edited.id)+"/", data, format='json', **header)
+            print(response.status_code)
             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, "REST token-auth failed - "+str(response.status_code))
             self.assertEqual(Vote.objects.count(), 1)
             self.assertEqual(Vote.objects.get().poll, self.poll,"error is - "+ str(Vote.objects.get().poll))
-            self.assertEqual(Vote.objects.get().choice, self.choice2)
+            #should remain the same
+            self.assertEqual(Vote.objects.get().choice, self.choice)
             self.assertEqual(Vote.objects.get().foodie, self.foodie2)
 
 

@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, response, permissions
 from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
-from .permissions import IsStaffOrTargetUser, IsOwnerOrReadonly_Vote
+from .permissions import IsStaffOrTargetUser, IsOwnerOrStaffElseReadonly_Vote, IsPollOwnerOrStaffElseReadonly_Vote
 from django.http import JsonResponse
 from rest_framework import filters
 
@@ -50,7 +50,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_permissions(self):
-        return (IsAdminUser() if self.request.method == 'POST' or self.request.method == 'PUT' or self.request.method == 'DELETE'
+        return (IsAdminUser() if self.request.method not in permissions.SAFE_METHODS
                 else permissions.IsAuthenticated()),
     def get_queryset(self):
         return Restaurant.objects.annotate(
@@ -92,6 +92,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     ordering_fields = ('subject', 'added', 'score')
     permission_classes = (permissions.IsAuthenticated,)
+    def get_permissions(self):
+        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
     #
     # def get_permissions(self):
     #     # allow non-authenticated user to create via POST
@@ -116,6 +119,9 @@ class PollViewSet(viewsets.ModelViewSet):
     serializer_class = PollSerializer
     filter_backends = (filters.DjangoFilterBackend,)
     permission_classes = (permissions.IsAuthenticated,)
+    def get_permissions(self):
+        return (IsPollOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
 
     def retrieve(self, request, pk=None):
          poll = Poll.objects.get(id=pk)
@@ -144,7 +150,7 @@ class VoteViewSet(viewsets.ModelViewSet):
     #
     permission_classes = (permissions.IsAuthenticated,)
     def get_permissions(self):
-        return (IsOwnerOrReadonly_Vote() if self.request.method == 'POST' or self.request.method == 'PUT' or self.request.method == 'DELETE'
+        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
                 else permissions.IsAuthenticated()),
 
     # filter_fields = ('subject','restaurant','foodie')
