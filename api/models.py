@@ -48,7 +48,6 @@ class Review(models.Model):
 
 
 def foodie_saved_receiver(sender, instance, created, *args, **kwargs):
-    print("create new foodie")
     user = instance
     foodie = Foodie.objects.filter(user = user)
     if not foodie:

@@ -10,8 +10,6 @@ var Router = require('react-router');
 
 var Restaurant = React.createClass({
   MoveToProfile: function (event) {
-    console.log("move calls");
-    console.log(String(this.props.url));
     this.props.handleMoveToProfile(String(this.props.url));
   },
   render: function() {
@@ -66,7 +64,6 @@ var RestaurantPage= React.createClass({
           },
           success: function(data) {
             this.setState({data: data});
-            console.log(data);
           }.bind(this),
           error: function(xhr, status, err) {
             console.error(this.props.url, status, err.toString());

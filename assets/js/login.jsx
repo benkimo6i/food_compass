@@ -30,9 +30,6 @@ var loginHeader = React.createClass({
 
         var username = ReactDOM.findDOMNode(this.refs.username).value;
         var pass = ReactDOM.findDOMNode(this.refs.pass).value;
-        console.log("submit login");
-        console.log(username);
-        console.log(pass);
 
         auth.login(username, pass, (loggedIn) => {
             this.context.router.replace('/app/')
@@ -44,10 +41,6 @@ var loginHeader = React.createClass({
         var email = ReactDOM.findDOMNode(this.refs.signup_email).value;
         var pass = ReactDOM.findDOMNode(this.refs.signup_pass).value;
         var confirm_pass = ReactDOM.findDOMNode(this.refs.confirm_signup_pass).value;
-
-        console.log("submit login");
-        console.log(username);
-        console.log(pass);
 
         if (pass == confirm_pass && !!pass && !!confirm_pass) {
             auth.signUp(username, email, pass, confirm_pass, (loggedIn) => {

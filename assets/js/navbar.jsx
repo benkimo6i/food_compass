@@ -65,7 +65,6 @@ var CmsHeader = React.createClass({
             },
             success: function(res) {
                 this.setState({user: res})
-                console.log(this.state.user.is_staff);
             }.bind(this)
         })
     },

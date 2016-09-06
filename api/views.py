@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import viewsets, response, permissions
 from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer
 from rest_framework.permissions import AllowAny, IsAdminUser
-from .permissions import IsStaffOrTargetUser
+from .permissions import IsStaffOrTargetUser, IsOwnerOrReadonly_Vote
 from django.http import JsonResponse
 from rest_framework import filters
 
@@ -10,7 +10,7 @@ from .models import Restaurant, Review, Foodie, Poll, Vote
 
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
-from django.db.models import Avg
+from django.db.models import Avg, Count
 
 from yelp.client import Client
 from yelp.oauth1_authenticator import Oauth1Authenticator
@@ -47,11 +47,11 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     filter_backends = (filters.DjangoFilterBackend,filters.OrderingFilter)
     pagination_class = LimitOffsetPagination
     ordering_fields = ('added', 'avg_review')
-    # permission_classes = (permissions.IsAuthenticated,)
-    #
-    # def get_permissions(self):
-    #     return (IsAdminUser() if self.request.method == 'POST'
-    #             else permissions.IsAuthenticated()),
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        return (IsAdminUser() if self.request.method == 'POST' or self.request.method == 'PUT' or self.request.method == 'DELETE'
+                else permissions.IsAuthenticated()),
     def get_queryset(self):
         return Restaurant.objects.annotate(
             avg_review=Avg('review__score')
@@ -63,7 +63,7 @@ class RestaurantViewSet(viewsets.ModelViewSet):
             'restaurant': RestaurantSerializer(restaurant,context={'request':request}).data
         }
         custom_data.update({
-            'average_score' : restaurant.review_set.aggregate(Avg('score')).values()[0]
+            'average_score' : format(restaurant.review_set.aggregate(Avg('score')).values()[0], '.2f')
         })
 
         return response.Response(custom_data)
@@ -109,22 +109,44 @@ class FoodieViewSet(viewsets.ModelViewSet):
     queryset = Foodie.objects.all()
     serializer_class = FoodieSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
 class PollViewSet(viewsets.ModelViewSet):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
     filter_backends = (filters.DjangoFilterBackend,)
+    permission_classes = (permissions.IsAuthenticated,)
 
+    def retrieve(self, request, pk=None):
+         poll = Poll.objects.get(id=pk)
+         custom_data = {
+             'poll': PollSerializer(poll,context={'request':request}).data
+         }
+         selections=[]
+         for restaurant in poll.Restaurants.all():
+             selections.append(restaurant)
+         selection_vote_counts = {}
+         for selection in selections:
+            selection_vote_counts[str(selection.name)] = poll.vote_set.filter(choice=selection.id).aggregate(Count('id')).values()[0]
+         custom_data.update({
+             'vote_counts' : selection_vote_counts
+         })
 
-    # permission_classes = (permissions.IsAuthenticated,)
+         return response.Response(custom_data)
+
     # filter_fields = ('subject','restaurant','foodie')
 
 class VoteViewSet(viewsets.ModelViewSet):
     queryset = Vote.objects.all()
     serializer_class = VoteSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    filter_fields = ('foodie','poll','choice')
+    #
+    permission_classes = (permissions.IsAuthenticated,)
+    def get_permissions(self):
+        return (IsOwnerOrReadonly_Vote() if self.request.method == 'POST' or self.request.method == 'PUT' or self.request.method == 'DELETE'
+                else permissions.IsAuthenticated()),
+
     # filter_fields = ('subject','restaurant','foodie')
 
 

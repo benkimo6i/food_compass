@@ -19,3 +19,7 @@ class IsStaff(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         # allow logged in user to view own details, allows staff to view all records
         return request.user.is_staff
+
+class IsOwnerOrReadonly_Vote(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+            return obj.foodie.user == request.user

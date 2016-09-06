@@ -49,8 +49,6 @@ var ReviewBox = React.createClass({
     else if (this.state.sort == "added") {
         reviews_url = reviews_url + "?ordering=added"
     }
-    console.log("pk is: "+String(this.props.restaurantPk));
-    console.log(typeof(this.props.restaurantPk));
     $.ajax({
      method: 'GET',
             url: reviews_url,
@@ -59,9 +57,6 @@ var ReviewBox = React.createClass({
                 'Authorization': 'Token ' + localStorage.token
             },
             success: function(data) {
-                console.log("reviews are loaded");
-                console.log(typeof data);
-                console.log(data);
                 this.setState({data: data});
             }.bind(this),
       error: function(xhr, status, err) {
@@ -70,7 +65,6 @@ var ReviewBox = React.createClass({
     });
   },
   handleReviewSubmit: function(Review) {
-    console.log("calling ajax post to submit review");
     var Reviews = this.state.data;
     $.ajax({
       method: 'POST',
@@ -81,9 +75,6 @@ var ReviewBox = React.createClass({
             'Authorization': 'Token ' + localStorage.token
       },
       success: function(data) {
-        console.log("Review Submit successful");
-        console.log(typeof data);
-        console.log(data);
         var newReviews = Reviews.concat([data]);
         this.setState({data: newReviews});
         this.props.handleAverageScore();
@@ -120,7 +111,6 @@ var ReviewBox = React.createClass({
     };
   },
   componentDidMount: function() {
-    console.log("review starts");
     this.loadReviewsFromServer();
   },
   render: function() {
@@ -177,9 +167,7 @@ var ReviewForm = React.createClass({
                 'Authorization': 'Token ' + localStorage.token
             },
             success: function(res) {
-                console.log("loading Foodie in form");
                 this.setState({foodie: res});
-                console.log(this.state.foodie);
             }.bind(this)
         })
   },
@@ -192,9 +180,7 @@ var ReviewForm = React.createClass({
                 'Authorization': 'Token ' + localStorage.token
             },
             success: function(res) {
-                console.log("loading user in form");
                 this.setState({user: res});
-                console.log("foodie id: "+ String(this.state.user.foodie_id));
                 this.loadFoodieData(this.state.user.foodie_id);
             }.bind(this)
         })
@@ -207,7 +193,6 @@ var ReviewForm = React.createClass({
         };
   },
   handleWouldGO: function(){
-    console.log("handle would go called");
     this.setState({
       would_go_checked: !this.state.complete
     });
@@ -224,8 +209,6 @@ var ReviewForm = React.createClass({
       return;
     };
     this.props.onReviewSubmit({subject: subject, score: score, restaurant:restaurant_id,wouldGo:true, comment:comment, foodie_pk:foodie_id});
-    console.log("grabbed values");
-
   },
   render: function() {
     return (
@@ -269,7 +252,6 @@ var RestaurantProfile = React.createClass({
           },
           success: function(data) {
             this.setState({average_score:data.average_score});
-            console.log("restaurant average is updated");
           }.bind(this),
           error: function(xhr, status, err) {
             console.error(this.props.url, status, err.toString());
@@ -285,7 +267,6 @@ var RestaurantProfile = React.createClass({
                 'Authorization': 'Token ' + localStorage.token
           },
           success: function(data) {
-            console.log(data.restaurant);
             this.setState({data: data.restaurant});
             this.setState({average_score:data.average_score});
           }.bind(this),

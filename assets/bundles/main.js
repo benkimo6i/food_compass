@@ -67,11 +67,11 @@
 	ReactDOM.render(React.createElement(
 	    Router.Router,
 	    { history: Router.browserHistory },
-	    React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant }),
-	    React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll }),
-	    React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile }),
-	    React.createElement(Router.Route, { path: '/app/login/', component: Login }),
-	    React.createElement(Router.Route, { path: '/app/test/', component: Test }),
+	    React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant, onEnter: requireAuth }),
+	    React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll, onEnter: requireAuth }),
+	    React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile, onEnter: requireAuth }),
+	    React.createElement(Router.Route, { path: '/app/login/', component: Login, onEnter: requireAuth }),
+	    React.createElement(Router.Route, { path: '/app/test/', component: Test, onEnter: requireAuth }),
 	    React.createElement(Router.Route, { name: 'app', path: '/app/', component: App, onEnter: requireAuth })
 	), document.getElementById('app'));
 
@@ -35325,19 +35325,23 @@
 
 	    signUp: function (username, email, pass, confirm_pass, cb) {
 	        if (pass === confirm_pass) {
+	            var data = {
+	                username: username,
+	                email: email,
+	                password: pass,
+	                confirm_pass: confirm_pass
+	            };
 	            var context = this;
 	            $.ajax({
 	                type: 'POST',
 	                url: '/api/users/',
-	                data: {
-	                    username: username,
-	                    email: email,
-	                    password: pass,
-	                    confirm_pass: confirm_pass
-	                },
+	                data: data,
 	                success: function (res) {
 	                    context.login(username, pass, cb);
-	                }
+	                }.bind(this),
+	                error: function (xhr, status, err) {
+	                    console.log("registration failed");
+	                }.bind(this)
 	            });
 	        }
 	    }
@@ -35414,7 +35418,6 @@
 	            },
 	            success: function (res) {
 	                this.setState({ user: res });
-	                console.log(this.state.user.is_staff);
 	            }.bind(this)
 	        });
 	    },
@@ -54354,8 +54357,6 @@
 	  displayName: 'Restaurant',
 
 	  MoveToProfile: function (event) {
-	    console.log("move calls");
-	    console.log(String(this.props.url));
 	    this.props.handleMoveToProfile(String(this.props.url));
 	  },
 	  render: function () {
@@ -54427,7 +54428,6 @@
 	      },
 	      success: function (data) {
 	        this.setState({ data: data });
-	        console.log(data);
 	      }.bind(this),
 	      error: function (xhr, status, err) {
 	        console.error(this.props.url, status, err.toString());
@@ -54522,13 +54522,18 @@
 	var Choice = React.createClass({
 	  displayName: 'Choice',
 
+	  handleChoice: function (e) {
+	    console.log("picking choice");
+	    console.log(e.currentTarget.value);
+	    this.props.updateChoice(e.currentTarget.value);
+	  },
 	  MoveToProfile: function (event) {
 	    console.log("move calls");
 	    console.log(String(this.props.restaurant_id));
 	    this.props.handleMoveToProfile(String(this.props.restaurant_id));
 	  },
 	  getInitialState: function () {
-	    return { data: '', restaurant: [] };
+	    return { data: '', restaurant: [], selectedChoice: [] };
 	  },
 	  componentDidMount: function () {
 	    this.loadRestaurantFromServer();
@@ -54577,11 +54582,7 @@
 	          React.createElement('br', null),
 	          this.state.restaurant.description
 	        ),
-	        React.createElement(
-	          Button,
-	          null,
-	          'Vote'
-	        )
+	        React.createElement('input', { onChange: this.handleChoice, type: 'radio', name: this.props.poll_id, ref: this.props.restaurant_id, value: this.props.restaurant_id })
 	      )
 	    );
 	  }
@@ -54590,6 +54591,127 @@
 	var Poll = React.createClass({
 	  displayName: 'Poll',
 
+	  updateSelectedChoice: function (choice) {
+	    this.setState({ selected_choice: choice }, function () {
+	      console.log("poll choice picked");
+	      console.log(this.state.selected_choice);
+	    });
+	  },
+	  loadCreator: function () {
+	    $.ajax({
+	      method: 'Get',
+	      url: "/api/foodies/" + this.props.creator_name + "/",
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("creator loaded");
+	        console.log(data);
+	        this.setState({ creator_username: data.user.username });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  loadVoteCounts: function () {
+	    $.ajax({
+	      method: 'Get',
+	      url: "/api/polls/" + this.props.poll_id + "/",
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("vote counts loaded");
+	        console.log(data.vote_counts);
+	        this.setState({ vote_counts: data.vote_counts });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return { creator_username: '', selected_choice: '', vote_counts: [], vote_check: [] };
+	  },
+	  componentDidMount: function () {
+	    this.loadCreator();
+	    this.loadVoteCounts();
+	  },
+	  submitVote: function () {
+	    console.log("submitting vote");
+	    var vote_url = "/api/votes/";
+	    var foodie_id = this.props.foodie_id;
+	    var choice = this.state.selected_choice;
+	    var poll_id = this.props.poll_id;
+	    vote_url = vote_url + "?foodie=" + String(foodie_id) + "&poll=" + String(poll_id);
+
+	    $.ajax({
+	      url: vote_url,
+	      contentType: 'application/json; charset=utf-8',
+	      dataType: 'json',
+	      type: 'GET',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (vote_check) {
+	        console.log("check vote state-0");
+	        console.log(vote_url);
+	        console.log("check vote state-1");
+	        this.setState({ vote_check: vote_check }, function () {
+	          if (vote_check.length == 0) {
+	            data = { foodie_pk: foodie_id, choice: choice, poll: poll_id };
+	            console.log("posting vote");
+	            console.log(JSON.stringify(data));
+	            $.ajax({
+	              url: "/api/votes/",
+	              contentType: 'application/json; charset=utf-8',
+	              dataType: 'json',
+	              type: 'POST',
+	              data: JSON.stringify(data),
+	              headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	              },
+	              success: function (data) {
+	                this.loadVoteCounts();
+	              }.bind(this),
+	              error: function (xhr, status, err) {
+	                console.log("vote failed");
+	                console.error(this.props.url, status, err.toString());
+	              }.bind(this)
+	            });
+	          } else {
+	            console.log(vote_check);
+	            data = { foodie_pk: foodie_id, choice: choice, poll: poll_id };
+	            $.ajax({
+	              url: "/api/votes/" + String(this.state.vote_check[0].id) + "/",
+	              contentType: 'application/json; charset=utf-8',
+	              dataType: 'json',
+	              type: 'PUT',
+	              data: JSON.stringify(data),
+	              headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	              },
+	              success: function (data) {
+	                console.log("vote created");
+	                this.loadVoteCounts();
+	              }.bind(this),
+	              error: function (xhr, status, err) {
+	                console.log("vote failed");
+	                console.error(this.props.url, status, err.toString());
+	              }.bind(this)
+	            });
+	          }
+	        });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("vote failed");
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
 	  goToRestaurantProfile: function (restaurantKey) {
 	    this.context.router.push('/app/restaurant/' + String(restaurantKey));
 	  },
@@ -54598,8 +54720,20 @@
 	  },
 	  render: function () {
 	    var ChoicesNodes = this.props.choices.map(function (choice) {
-	      return React.createElement(Choice, { restaurant_id: choice, handleMoveToProfile: this.goToRestaurantProfile });
+	      return React.createElement(Choice, { updateChoice: this.updateSelectedChoice, restaurant_id: choice, poll_id: this.props.poll_id, handleMoveToProfile: this.goToRestaurantProfile });
 	    }, this);
+	    var VoteCountsNodes = Object.getOwnPropertyNames(this.state.vote_counts).map(function (key) {
+	      var restaurantName = { key };
+	      var voteCount = this.state.vote_counts[key];
+	      return React.createElement(
+	        'div',
+	        null,
+	        key,
+	        ': ',
+	        voteCount
+	      );
+	    }, this);
+
 	    return React.createElement(
 	      'div',
 	      { className: 'Poll' },
@@ -54623,14 +54757,31 @@
 	            null,
 	            'Added on: ',
 	            this.props.added,
+	            ' By: ',
+	            this.state.creator_username,
 	            React.createElement('br', null),
 	            this.props.children
+	          ),
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Vote Count'
+	          ),
+	          React.createElement(
+	            'span',
+	            null,
+	            VoteCountsNodes
 	          ),
 	          React.createElement(
 	            Col,
 	            { xs: 12, md: 12 },
 	            ChoicesNodes
 	          )
+	        ),
+	        React.createElement(
+	          Button,
+	          { onClick: this.submitVote },
+	          'Vote'
 	        )
 	      )
 	    );
@@ -54640,8 +54791,34 @@
 	var PollPage = React.createClass({
 	  displayName: 'PollPage',
 
+	  loadFoodieData: function (foodie_id) {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/foodies/' + String(foodie_id) + '/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        this.setState({ foodie: res });
+	      }.bind(this)
+	    });
+	  },
+	  loadUserData: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/users/i/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        this.setState({ user: res });
+	        this.loadFoodieData(this.state.user.foodie_id);
+	      }.bind(this)
+	    });
+	  },
 	  loadPollsFromServer: function () {
-	    console.log("polls page mounted - loading");
 	    var Polls_url = "/api/polls/";
 	    $.ajax({
 	      method: 'GET',
@@ -54651,8 +54828,6 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
-	        console.log("polls page mounted - loading success");
-	        console.log(data);
 	        this.setState({ data: data }, function () {
 	          console.log(this.state.data);
 	        });
@@ -54666,12 +54841,14 @@
 	  getInitialState: function () {
 	    return { data: [],
 	      sort: [],
-	      order: []
+	      order: [],
+	      user: [],
+	      foodie: []
 	    };
 	  },
 	  componentDidMount: function () {
-	    console.log("polls page mounted");
 	    this.loadPollsFromServer();
+	    this.loadUserData();
 	  },
 
 	  render: function () {
@@ -54686,7 +54863,7 @@
 	          null,
 	          'Polls'
 	        ),
-	        React.createElement(PollList, { data: this.state.data })
+	        React.createElement(PollList, { data: this.state.data, foodie_id: this.state.foodie.id })
 	      )
 	    );
 	  }
@@ -54699,7 +54876,7 @@
 	    var PollNodes = this.props.data.map(function (poll) {
 	      return React.createElement(
 	        Poll,
-	        { title: poll.title, choices: poll.Restaurants, added: poll.added },
+	        { poll_id: poll.id, creator_name: poll.creator, foodie_id: this.props.foodie_id, title: poll.title, choices: poll.Restaurants, added: poll.added },
 	        poll.description
 	      );
 	    }, this);
@@ -54751,9 +54928,6 @@
 
 	        var username = ReactDOM.findDOMNode(this.refs.username).value;
 	        var pass = ReactDOM.findDOMNode(this.refs.pass).value;
-	        console.log("submit login");
-	        console.log(username);
-	        console.log(pass);
 
 	        auth.login(username, pass, loggedIn => {
 	            this.context.router.replace('/app/');
@@ -54765,10 +54939,6 @@
 	        var email = ReactDOM.findDOMNode(this.refs.signup_email).value;
 	        var pass = ReactDOM.findDOMNode(this.refs.signup_pass).value;
 	        var confirm_pass = ReactDOM.findDOMNode(this.refs.confirm_signup_pass).value;
-
-	        console.log("submit login");
-	        console.log(username);
-	        console.log(pass);
 
 	        if (pass == confirm_pass && !!pass && !!confirm_pass) {
 	            auth.signUp(username, email, pass, confirm_pass, loggedIn => {
@@ -55606,8 +55776,6 @@
 	    } else if (this.state.sort == "added") {
 	      reviews_url = reviews_url + "?ordering=added";
 	    }
-	    console.log("pk is: " + String(this.props.restaurantPk));
-	    console.log(typeof this.props.restaurantPk);
 	    $.ajax({
 	      method: 'GET',
 	      url: reviews_url,
@@ -55616,9 +55784,6 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
-	        console.log("reviews are loaded");
-	        console.log(typeof data);
-	        console.log(data);
 	        this.setState({ data: data });
 	      }.bind(this),
 	      error: function (xhr, status, err) {
@@ -55627,7 +55792,6 @@
 	    });
 	  },
 	  handleReviewSubmit: function (Review) {
-	    console.log("calling ajax post to submit review");
 	    var Reviews = this.state.data;
 	    $.ajax({
 	      method: 'POST',
@@ -55638,9 +55802,6 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
-	        console.log("Review Submit successful");
-	        console.log(typeof data);
-	        console.log(data);
 	        var newReviews = Reviews.concat([data]);
 	        this.setState({ data: newReviews });
 	        this.props.handleAverageScore();
@@ -55676,7 +55837,6 @@
 	    };
 	  },
 	  componentDidMount: function () {
-	    console.log("review starts");
 	    this.loadReviewsFromServer();
 	  },
 	  render: function () {
@@ -55768,9 +55928,7 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (res) {
-	        console.log("loading Foodie in form");
 	        this.setState({ foodie: res });
-	        console.log(this.state.foodie);
 	      }.bind(this)
 	    });
 	  },
@@ -55783,9 +55941,7 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (res) {
-	        console.log("loading user in form");
 	        this.setState({ user: res });
-	        console.log("foodie id: " + String(this.state.user.foodie_id));
 	        this.loadFoodieData(this.state.user.foodie_id);
 	      }.bind(this)
 	    });
@@ -55798,7 +55954,6 @@
 	    };
 	  },
 	  handleWouldGO: function () {
-	    console.log("handle would go called");
 	    this.setState({
 	      would_go_checked: !this.state.complete
 	    });
@@ -55815,7 +55970,6 @@
 	      return;
 	    };
 	    this.props.onReviewSubmit({ subject: subject, score: score, restaurant: restaurant_id, wouldGo: true, comment: comment, foodie_pk: foodie_id });
-	    console.log("grabbed values");
 	  },
 	  render: function () {
 	    return React.createElement(
@@ -55890,7 +56044,6 @@
 	      },
 	      success: function (data) {
 	        this.setState({ average_score: data.average_score });
-	        console.log("restaurant average is updated");
 	      }.bind(this),
 	      error: function (xhr, status, err) {
 	        console.error(this.props.url, status, err.toString());
@@ -55906,7 +56059,6 @@
 	        'Authorization': 'Token ' + localStorage.token
 	      },
 	      success: function (data) {
-	        console.log(data.restaurant);
 	        this.setState({ data: data.restaurant });
 	        this.setState({ average_score: data.average_score });
 	      }.bind(this),

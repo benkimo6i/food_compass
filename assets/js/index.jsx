@@ -22,11 +22,11 @@ function requireAuth(nextState, replace) {
 
 ReactDOM.render(
     <Router.Router history={Router.browserHistory}>
-        <Router.Route path='/app/add_restaurant/' component={AddRestaurant}/>
-        <Router.Route path='/app/add_poll/' component={AddPoll}/>
-        <Router.Route path='/app/restaurant/:id' component={RestaurantProfile} />
-        <Router.Route path='/app/login/' component={Login} />
-        <Router.Route path='/app/test/' component={Test} />
+        <Router.Route path='/app/add_restaurant/' component={AddRestaurant} onEnter={requireAuth}/>
+        <Router.Route path='/app/add_poll/' component={AddPoll} onEnter={requireAuth}/>
+        <Router.Route path='/app/restaurant/:id' component={RestaurantProfile} onEnter={requireAuth}/>
+        <Router.Route path='/app/login/' component={Login} onEnter={requireAuth} />
+        <Router.Route path='/app/test/' component={Test} onEnter={requireAuth} />
         <Router.Route name='app' path='/app/' component={App} onEnter={requireAuth} />
     </Router.Router>,
     document.getElementById('app')
