@@ -1,6 +1,5 @@
-Token-based Authentication with React and DRF
+Token-based Authentication with React and DRF (Token Authentication Login - React basic setup forked from - https://github.com/geezhawk/django-react-auth)
 ---------------------------------------------
-This is an example project for [my tutorial on authenticating users with React and Django](http://geezhawk.github.io/user-authentication-with-react-and-django-rest-framework). To test it out yourself, clone the repository and run:
 
 Virtual env is recommended
 
