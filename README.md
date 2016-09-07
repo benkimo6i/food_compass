@@ -16,3 +16,5 @@ Quick Tutorial -
 3. `Post a couple of reviews`
 4. `Create a poll and add restaurants as choice`
 5. `Submit votes on the homepage`
+6. `Log out of the super user and register a non-admin user from http://127.0.0.1:8000/app/ or http://localhost/app/`
+7. Play around with the non-admin user!
