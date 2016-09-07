@@ -4,7 +4,7 @@ var ReactBootstrap = require('react-bootstrap');
 var Grid = ReactBootstrap.Grid;
 var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
-
+var Router = require('react-router');
 var Input = ReactBootstrap.Input;
 var Button = ReactBootstrap.Button;
 var FormGroup = ReactBootstrap.FormGroup;
@@ -26,13 +26,20 @@ var Navigation = React.createClass({
 });
 
 var Review = React.createClass({
+  goToFoodieProfile: function() {
+        var foodie_key = String(this.props.foodie_pk);
+        this.context.router.push('/app/foodie/'+foodie_key);
+  },
+  contextTypes: {
+        router: React.PropTypes.object.isRequired
+  },
   render: function() {
     return (
       <div className="Review">
         <h2 className="ReviewAuthor">
           {this.props.subject}
         </h2>
-        <span><em>By: {this.props.foodie_name}</em> on {this.props.added_on}</span><br/>
+        <span><em>By: <a onClick={this.goToFoodieProfile}>{this.props.foodie_name}</a></em> on {this.props.added_on}</span><br/>
         <span>score: {this.props.score}/10</span>
         <span><p>{this.props.children}</p></span>
       </div>
@@ -139,7 +146,7 @@ var ReviewList = React.createClass({
   render: function() {
     var reviewNodes = this.props.data.map(function(review) {
       return (
-        <Review subject={review.subject} key={review.id} url={review.url} score={review.score} foodie_name={review.foodie.user.username} added_on={review.added}>
+        <Review subject={review.subject} key={review.id} url={review.url} score={review.score} foodie_pk={review.foodie.id} foodie_name={review.foodie.user.username} added_on={review.added}>
           {review.comment}
         </Review>
       );
@@ -300,7 +307,7 @@ var RestaurantProfile = React.createClass({
         <Row className='text-align-center'>
               <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
                 <span>
-                    Review average: {this.state.average_score}/10
+                    Review average score: {this.state.average_score}/10
                 </span>
                 <br/>
                 <span>

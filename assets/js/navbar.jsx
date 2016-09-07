@@ -27,6 +27,10 @@ var CmsHeader = React.createClass({
     goAddRestaurant: function() {
         this.context.router.push('/app/add_restaurant/');
     },
+    goToFoodieProfile: function() {
+        var foodie_key = this.state.user.foodie_id;
+        this.context.router.push('/app/foodie/'+foodie_key);
+    },
     goAddPoll: function() {
         this.context.router.push('/app/add_poll/');
     },
@@ -87,7 +91,7 @@ var CmsHeader = React.createClass({
 
                           </Nav>
                           <Nav pullRight>
-                            <NavItem eventKey={2} href={this.state.user.username}>{this.state.user.username}</NavItem>
+                            <NavItem eventKey={2} onClick={this.goToFoodieProfile}>{this.state.user.username}</NavItem>
                             <NavItem eventKey={1} href="#" onClick={this.logoutHandler}>Log out</NavItem>
                           </Nav>
                         </Navbar.Collapse>
@@ -111,7 +115,7 @@ var CmsHeader = React.createClass({
                           </Nav>
 
                           <Nav pullRight>
-                            <NavItem eventKey={2} href={this.state.user.username}>{this.state.user.username}</NavItem>
+                            <NavItem eventKey={2} onClick={this.goToFoodieProfile}>{this.state.user.username}</NavItem>
                             <NavItem eventKey={1} href="#" onClick={this.logoutHandler}>Log out</NavItem>
                           </Nav>
                         </Navbar.Collapse>
