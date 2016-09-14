@@ -2,23 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66cb48ec-c702-4c4e-b385-e797686bb509" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/django_react_auth/custom_storages.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/staticfiles/media/profile_images/wtchang/718_hoodie.jpg" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/staticfiles/media/profile_images/wtchang/IMG_0522.JPG" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/staticfiles/media/profile_images/wtchang/IMG_0522_CWukR2K.JPG" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/db.sqlite3" afterPath="$PROJECT_DIR$/db.sqlite3" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/add_poll.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/add_poll.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/css/app.css" afterPath="$PROJECT_DIR$/staticfiles/css/app.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/auth.js" afterPath="$PROJECT_DIR$/staticfiles/js/auth.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/js/foodie_profile.jsx" afterPath="$PROJECT_DIR$/assets/js/foodie_profile.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/foodie_profile.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/foodie_profile.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/index.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/index.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/bundles/main.js" afterPath="$PROJECT_DIR$/assets/bundles/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/bundles/main.js" afterPath="$PROJECT_DIR$/staticfiles/bundles/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/restaurant.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/restaurant.jsx" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/django_react_auth/settings.py" afterPath="$PROJECT_DIR$/django_react_auth/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="django-react-auth.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -52,8 +36,8 @@
       <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.6028939">
-              <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
+            <state vertical-scroll-proportion="0.08360129">
+              <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="171" selection-end-column="75" />
               <folding />
             </state>
           </provider>
@@ -977,8 +961,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6028939">
-          <caret line="25" column="12" selection-start-line="25" selection-start-column="12" selection-end-line="25" selection-end-column="12" />
+        <state vertical-scroll-proportion="0.08360129">
+          <caret line="143" column="0" selection-start-line="143" selection-start-column="0" selection-end-line="171" selection-end-column="75" />
           <folding />
         </state>
       </provider>
