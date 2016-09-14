@@ -27,7 +27,7 @@ module.exports = {
             type: 'POST',
             url: '/api/obtain-auth-token/',
             data: {
-                username: username,
+                username: username.toLowerCase(),
                 password: pass
             },
             success: function(res){
@@ -37,5 +37,28 @@ module.exports = {
                 })
             }
         })
-    }, 
+    },
+
+    signUp: function(username, email, pass, confirm_pass, cb) {
+        if (pass ===confirm_pass) {
+            var data = {
+                    username: username,
+                    email:email,
+                    password: pass,
+                    confirm_pass: confirm_pass,
+                };
+            var context = this;
+            $.ajax({
+                type: 'POST',
+                url: '/api/users/',
+                data: data,
+                success: function(res){
+                     context.login(username, pass, cb)
+                }.bind(this),
+                  error: function(xhr, status, err) {
+                    console.log("registration failed");
+                  }.bind(this)
+            })
+        }
+    },
 }

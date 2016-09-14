@@ -13,7 +13,7 @@ var NavDropdown = ReactBootstrap.NavDropdown;
 var MenuItem = ReactBootstrap.MenuItem;
 var FormGroup = ReactBootstrap.FormGroup;
 var FormControl = ReactBootstrap.FormControl;
-var ReactDOM = require('react-dom')
+var ReactDOM = require('react-dom');
 
 var loginHeader = React.createClass({
     logoutHandler: function() {
@@ -30,13 +30,24 @@ var loginHeader = React.createClass({
 
         var username = ReactDOM.findDOMNode(this.refs.username).value;
         var pass = ReactDOM.findDOMNode(this.refs.pass).value;
-        console.log("submit login");
-        console.log(username);
-        console.log(pass);
 
         auth.login(username, pass, (loggedIn) => {
             this.context.router.replace('/app/')
         })
+    },
+    handleRegistration: function(e) {
+        e.preventDefault()
+        var username = ReactDOM.findDOMNode(this.refs.signup_username).value;
+        var email = ReactDOM.findDOMNode(this.refs.signup_email).value;
+        var pass = ReactDOM.findDOMNode(this.refs.signup_pass).value;
+        var confirm_pass = ReactDOM.findDOMNode(this.refs.confirm_signup_pass).value;
+
+        if (pass == confirm_pass && !!pass && !!confirm_pass) {
+            auth.signUp(username, email, pass, confirm_pass, (loggedIn) => {
+                this.context.router.replace('/app/')
+            })
+        }
+
     },
     logoutHandler: function() {
         auth.logout()
@@ -70,6 +81,31 @@ var loginHeader = React.createClass({
                           </Nav>
                         </Navbar.Collapse>
                       </Navbar>
+                      <Row className='sign-up-label text-align-center'>
+                        <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
+                            <h1>Sign Up</h1>
+                            <br/>
+                        </Col>
+                      </Row>
+                      <Row className='text-align-center'>
+                        <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
+                          <form onSubmit={this.handleRegistration}>
+                                    <FormGroup>
+                                      <FormControl type="text" placeholder="username" ref="signup_username" />
+                                      <br/>
+                                      <FormControl type="text" placeholder="email" ref="signup_email" />
+                                      <br/>
+                                      <FormControl type="password" placeholder="password" ref="signup_pass" />
+                                      <br/>
+                                      <FormControl type="password" placeholder="confirm password" ref="confirm_signup_pass" />
+                                      {' '}
+                                      <br/>
+                                      <br/>
+                                      <Button type="submit">Register</Button>
+                                    </FormGroup>
+                          </form>
+                        </Col>
+                      </Row>
                   </div>
               )
     }

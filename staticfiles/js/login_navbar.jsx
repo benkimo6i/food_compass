@@ -25,7 +25,6 @@ var CmsHeader = React.createClass({
         var pass = this.refs.pass.value
 
         auth.login(username, pass, (loggedIn) => {
-            console.log("login called");
             this.context.router.replace('/app/')
         })
     },

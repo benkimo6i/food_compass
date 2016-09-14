@@ -11,11 +11,28 @@ var Nav = ReactBootstrap.Nav;
 var NavItem = ReactBootstrap.NavItem;
 var NavDropdown = ReactBootstrap.NavDropdown;
 var MenuItem = ReactBootstrap.MenuItem;
+var Router = require('react-router');
+
+
+
 
 var CmsHeader = React.createClass({
     logoutHandler: function() {
         auth.logout()
         this.context.router.replace('/app/login/')
+    },
+    returnHome: function() {
+        this.context.router.push('/app/');
+    },
+    goAddRestaurant: function() {
+        this.context.router.push('/app/add_restaurant/');
+    },
+    goToFoodieProfile: function() {
+        var foodie_key = this.state.user.foodie_id;
+        this.context.router.push('/app/foodie/'+foodie_key);
+    },
+    goAddPoll: function() {
+        this.context.router.push('/app/add_poll/');
     },
     contextTypes: {
         router: React.PropTypes.object.isRequired
@@ -57,34 +74,56 @@ var CmsHeader = React.createClass({
     },
 
     render: function() {
-                const navbarInstance = (
-                  <Navbar>
-                    <Navbar.Header>
-                      <Navbar.Brand>
-                        <a href="#">React-Bootstrap</a>
-                      </Navbar.Brand>
-                      <Navbar.Toggle />
-                    </Navbar.Header>
-                    <Navbar.Collapse>
-                      <Nav>
-                        <NavItem eventKey={1} href="#">Link</NavItem>
-                        <NavItem eventKey={2} href="#">Link</NavItem>
-                        <NavDropdown eventKey={3} title="Dropdown" id="basic-nav-dropdown">
-                          <MenuItem eventKey={3.1}>Action</MenuItem>
-                          <MenuItem eventKey={3.2}>Another action</MenuItem>
-                          <MenuItem eventKey={3.3}>Something else here</MenuItem>
-                          <MenuItem divider />
-                          <MenuItem eventKey={3.3}>Separated link</MenuItem>
-                        </NavDropdown>
-                      </Nav>
-                      <Nav pullRight>
-                        <NavItem eventKey={2} href={this.state.user.username}>{this.state.user.username}</NavItem>
-                        <NavItem eventKey={1} href="#" onClick={this.logoutHandler}>Log out</NavItem>
-                      </Nav>
-                    </Navbar.Collapse>
-                  </Navbar>
-                );
-              return navbarInstance;
+                if (this.state.user.is_staff) {
+                    const navbarInstance = (
+                      <Navbar>
+                        <Navbar.Header>
+                          <Navbar.Brand>
+                            <a onClick={this.returnHome}>Food Compass</a>
+                          </Navbar.Brand>
+                          <Navbar.Toggle />
+                        </Navbar.Header>
+                        <Navbar.Collapse>
+                          <Nav>
+                            <NavItem eventKey={1} onClick={this.returnHome}>Home</NavItem>
+                            <NavItem eventKey={2} onClick={this.goAddPoll}>Add Poll</NavItem>
+                            <NavItem eventKey={3} onClick={this.goAddRestaurant}>Add Restaurants</NavItem>
+
+                          </Nav>
+                          <Nav pullRight>
+                            <NavItem eventKey={2} onClick={this.goToFoodieProfile}>{this.state.user.username}</NavItem>
+                            <NavItem eventKey={1} href="#" onClick={this.logoutHandler}>Log out</NavItem>
+                          </Nav>
+                        </Navbar.Collapse>
+                      </Navbar>
+                    );
+                    return navbarInstance;
+                } else {
+                    const navbarInstance = (
+                      <Navbar>
+                        <Navbar.Header>
+                          <Navbar.Brand>
+                            <a href="">Food Compass</a>
+                          </Navbar.Brand>
+                          <Navbar.Toggle />
+                        </Navbar.Header>
+                        <Navbar.Collapse>
+                        <Nav>
+                            <NavItem eventKey={1} onClick={this.returnHome}>Home</NavItem>
+                            <NavItem eventKey={2} onClick={this.goAddPoll}>Add Poll</NavItem>
+
+                          </Nav>
+
+                          <Nav pullRight>
+                            <NavItem eventKey={2} onClick={this.goToFoodieProfile}>{this.state.user.username}</NavItem>
+                            <NavItem eventKey={1} href="#" onClick={this.logoutHandler}>Log out</NavItem>
+                          </Nav>
+                        </Navbar.Collapse>
+                      </Navbar>
+                    );
+                    return navbarInstance;
+                }
+
     }
 });
 

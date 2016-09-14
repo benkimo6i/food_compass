@@ -23,9 +23,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '@g$7kxw@0uq0k*u^cyga^y6)@#ro@2y6dve+y#=2r3-whw@p*7'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -132,7 +132,11 @@ REST_FRAMEWORK = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, "staticfiles", "media")
+
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'assets'),
 )
+
 

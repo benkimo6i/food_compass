@@ -98,7 +98,7 @@ var RestaurantPage= React.createClass({
 var RestaurantList = React.createClass({
   goToRestaurantProfile: function(restaurantKey) {
         this.context.router.push('/app/restaurant/'+String(restaurantKey));
-  },
+    },
   contextTypes: {
         router: React.PropTypes.object.isRequired
   },

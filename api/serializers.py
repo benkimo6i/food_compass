@@ -2,21 +2,37 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Restaurant, Review,Foodie, Poll, Vote
+from .models import Restaurant, Review,Foodie, Poll, Vote, ProfileImage
 
 import googlemaps
 
 
 class UserSerializer(serializers.ModelSerializer):
     confirm_pass = serializers.CharField(allow_blank=False, write_only=True)
+    new_pass = serializers.CharField(allow_blank=True, write_only=True)
+    new_confirm_pass = serializers.CharField(allow_blank=True, write_only=True)
     foodie_id = serializers.URLField(source='foodie.id', allow_blank=True, read_only=True)
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'email','is_staff','confirm_pass','foodie_id')
-        write_only_fields = ('password','confirm_pass')
+        fields = ('id', 'username', 'password', 'email','is_staff','confirm_pass','foodie_id', 'new_pass', 'new_confirm_pass')
+        write_only_fields = ('password','confirm_pass', 'new_pass', 'new_confirm_pass')
         read_only_fields = ('id','is_staff','foodie')
 
     def create(self, validated_data):
+        user = User.objects.filter(username=validated_data['username'])
+        user2 = User.objects.filter(email=validated_data['email'])
+        password1 = validated_data['password']
+        password2 = validated_data['confirm_pass']
+        if user:
+            raise serializers.ValidationError("Username exist")
+        elif user2:
+            raise serializers.ValidationError("Email already registered")
+        elif password1 and password1 != password2:
+            raise serializers.ValidationError("Passwords don't match")
+        else:
+            validated_data['username'] = validated_data['username'].lower()
+            validated_data['email'] = validated_data['email'].lower()
+
         user = User.objects.create(
             username=validated_data['username'],
             email=validated_data['email'],
@@ -26,22 +42,60 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
-    def validate(self, data):
+    def update(self, instance, validated_data):
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        print("calling update/patch serializer method")
 
-        user = User.objects.filter(username=data['username'])
-        user2 = User.objects.filter(email=data['email'])
-        password1 = data['password']
-        password2 = data['confirm_pass']
-        if user:
-            raise serializers.ValidationError("Username exist")
-        elif user2:
-            raise serializers.ValidationError("Email already registered")
-        elif password1 and password1 != password2:
-            raise serializers.ValidationError("Passwords don't match")
-        else:
-            data['username'] = data['username'].lower()
-            data['email'] = data['email'].lower()
-            return data
+        if 'username' in validated_data:
+                if validated_data['username'] != instance.username:
+                    user = User.objects.filter(username=validated_data['username'])
+                    if user:
+                        raise serializers.ValidationError("Username exist")
+        if 'email' in validated_data:
+            if validated_data['email'] != instance.email:
+                print("email ")
+                email = User.objects.filter(email=validated_data['email'])
+                if email:
+                    print("email 1")
+                    raise serializers.ValidationError("Email exist")
+
+        if validated_data.viewkeys() >= {'password','new_pass','new_confirm_pass'}:
+            if validated_data["password"] or validated_data["new_pass"] or validated_data["new_confirm_pass"]:
+                if (validated_data["password"] and validated_data["new_pass"] and validated_data["new_confirm_pass"]):
+                    if instance.check_password(validated_data["password"]):
+                        if validated_data["new_pass"] == validated_data["new_confirm_pass"]:
+                            instance.set_password(validated_data["new_pass"])
+                        else:
+                            raise serializers.ValidationError("new password and new confirmation password do not match")
+                    else:
+                        raise serializers.ValidationError("Current password incorrect")
+        elif validated_data.viewkeys() & {'password','new_pass','new_confirm_pass'}:
+            raise serializers.ValidationError("Missing required password field(s)")
+
+        for attr, value in validated_data.items():
+            if attr != "password" and attr != "new_pass" and attr != "new_confirm_pass":
+                setattr(instance, attr, value)
+            else:
+                pass
+        instance.save()
+
+        return instance
+
+    # def validate(self, data):
+    #     user = User.objects.filter(username=data['username'])
+    #     user2 = User.objects.filter(email=data['email'])
+    #
+    #     if user:
+    #         raise serializers.ValidationError("Username exist")
+    #     elif user2:
+    #         raise serializers.ValidationError("Email already registered")
+    #     else:
+    #         data['username'] = data['username'].lower()
+    #         data['email'] = data['email'].lower()
+    #         return data
 
 class UserRegistrationSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -112,12 +166,30 @@ class RestaurantSerializer(serializers.ModelSerializer):
             self.lat = result['geometry']['location']['lat']
         return data
 
+class ProfileImageUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProfileImage
+        read_only_fields = ('added','updated','owner', 'url', 'datafile')
+    def create(self, validated_data):
+        try:
+            request = self.context.get("request")
+            if request and hasattr(request, "user"):
+                user = request.user
+                if ProfileImage.objects.filter(owner=user.foodie.id) > 0:
+                    print("deleting image object")
+                    ProfileImage.objects.filter(owner=user.foodie.id).delete()
+        except:
+            pass
+        return ProfileImage.objects.create(**validated_data)
+
 class FoodieSerializer(serializers.HyperlinkedModelSerializer):
     user = UserSerializer('user', read_only=True)
+    profileimage_set = ProfileImageUploadSerializer(many=True, read_only=True)
     class Meta:
         model = Foodie
-        fields = ('id','url','user')
+        fields = ('id','url','user','profileimage_set')
         read_only_fields = ('id','url')
+
 
 class ReviewSerializer(serializers.ModelSerializer):
     foodie = FoodieSerializer('foodie', read_only=True)

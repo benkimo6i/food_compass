@@ -55,6 +55,7 @@
 	var AddPoll = __webpack_require__(484);
 	var RestaurantProfile = __webpack_require__(485);
 	var FoodieProfile = __webpack_require__(486);
+	var editProfile = __webpack_require__(487);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -70,6 +71,7 @@
 	    { history: Router.browserHistory },
 	    React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant }),
 	    React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll }),
+	    React.createElement(Router.Route, { path: '/app/edit_profile/', component: editProfile }),
 	    React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile }),
 	    React.createElement(Router.Route, { path: '/app/foodie/:id', component: FoodieProfile }),
 	    React.createElement(Router.Route, { path: '/app/login/', component: Login }),
@@ -35331,7 +35333,9 @@
 	                username: username,
 	                email: email,
 	                password: pass,
-	                confirm_pass: confirm_pass
+	                confirm_pass: confirm_pass,
+	                new_pass: null,
+	                new_confirm_pass: null
 	            };
 	            var context = this;
 	            $.ajax({
@@ -56161,6 +56165,8 @@
 	var CmsHeader = __webpack_require__(225);
 	var FormGroup = ReactBootstrap.FormGroup;
 	var FormControl = ReactBootstrap.FormControl;
+	var ProfileImage = ReactBootstrap.Image;
+	var Router = __webpack_require__(159);
 
 	var Navigation = React.createClass({
 	  displayName: 'Navigation',
@@ -56177,6 +56183,12 @@
 	var FoodieProfile = React.createClass({
 	  displayName: 'FoodieProfile',
 
+	  goToEditProfile: function () {
+	    this.context.router.push('/app/edit_profile/');
+	  },
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
 	  loadFoodieData: function (foodie_id) {
 	    $.ajax({
 	      method: 'GET',
@@ -56187,7 +56199,10 @@
 	      },
 	      success: function (res) {
 	        console.log(res);
+	        console.log(res.profileimage_set[0].datafile);
+	        var profile_image_url = res.profileimage_set[0].datafile;
 	        this.setState({ foodie: res });
+	        this.setState({ profile_image_url: profile_image_url });
 	        this.setState({ username: res.user.username });
 	        this.setState({ foodie_pk: res.id });
 	      }.bind(this)
@@ -56196,6 +56211,7 @@
 	  getInitialState: function () {
 	    return {
 	      foodie: [],
+	      profile_image_url: "https://cdn4.iconfinder.com/data/icons/standard-free-icons/139/Profile01-128.png",
 	      user: [],
 	      username: [],
 	      foodie_pk: [],
@@ -56221,9 +56237,31 @@
 	            Col,
 	            { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
 	            React.createElement(
-	              'h1',
+	              Row,
 	              null,
-	              this.state.username
+	              React.createElement(
+	                Col,
+	                { xs: 12, md: 12 },
+	                React.createElement(
+	                  'h1',
+	                  null,
+	                  this.state.username
+	                )
+	              ),
+	              React.createElement(
+	                Col,
+	                { xs: 8, xsOffset: 2, sm: 4, smOffset: 4 },
+	                React.createElement(ProfileImage, { src: this.state.profile_image_url, circle: true, responsive: true })
+	              )
+	            ),
+	            React.createElement(
+	              Col,
+	              { xs: 12, md: 12 },
+	              React.createElement(
+	                Button,
+	                { type: 'submit', onClick: this.goToEditProfile, className: 'editProfile' },
+	                'Edit Profile'
+	              )
 	            )
 	          )
 	        ),
@@ -56424,6 +56462,315 @@
 	});
 
 	module.exports = FoodieProfile;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 487 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var auth = __webpack_require__(224);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var Navbar = ReactBootstrap.Navbar;
+	var Nav = ReactBootstrap.Nav;
+	var NavItem = ReactBootstrap.NavItem;
+	var NavDropdown = ReactBootstrap.NavDropdown;
+	var MenuItem = ReactBootstrap.MenuItem;
+	var FormGroup = ReactBootstrap.FormGroup;
+	var FormControl = ReactBootstrap.FormControl;
+	var ReactDOM = __webpack_require__(158);
+	var CmsHeader = __webpack_require__(225);
+	var FormControlLabel = ReactBootstrap.ControlLabel;
+
+	var Navigation = React.createClass({
+	    displayName: 'Navigation',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'App' },
+	            React.createElement(CmsHeader, null)
+	        );
+	    }
+	});
+
+	var EditProfile = React.createClass({
+	    displayName: 'EditProfile',
+
+	    handleProfileEdit: function (e) {
+	        e.preventDefault();
+	        var username = ReactDOM.findDOMNode(this.refs.signup_username).value;
+	        var email = ReactDOM.findDOMNode(this.refs.signup_email).value;
+
+	        var profileValues = { "username": username, "email": email };
+	        this.updateProfile(profileValues);
+	    },
+	    handlePasswordEdit: function (e) {
+	        e.preventDefault();
+	        var current_password = ReactDOM.findDOMNode(this.refs.signup_pass).value;
+	        var new_password = ReactDOM.findDOMNode(this.refs.new_signup_pass).value;
+	        var new_confirm_password = ReactDOM.findDOMNode(this.refs.new_pass_confirm).value;
+
+	        var profileValues = { "password": current_password, "new_pass": new_password, "new_confirm_pass": new_confirm_password };
+	        this.updateProfile(profileValues);
+	    },
+	    contextTypes: {
+	        router: React.PropTypes.object.isRequired
+	    },
+	    updateProfile: function (profileValues) {
+	        console.log(profileValues);
+
+	        for (var value in profileValues) {
+	            if (profileValues[value] == "") {
+	                delete profileValues[value];
+	            }
+	        };
+	        console.log(profileValues);
+	        $.ajax({
+	            url: '/api/users/' + String(this.state.user.id) + '/',
+	            contentType: 'application/json; charset=utf-8',
+	            dataType: 'json',
+	            type: 'PATCH',
+	            data: JSON.stringify(profileValues),
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (data) {
+	                console.log("user updated");
+	                this.context.router.replace('/app/foodie/' + String(this.state.foodie.id));
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error(this.props.url, status, err.toString());
+	            }.bind(this)
+	        });
+	    },
+	    updateProfileImage: function (e) {
+	        e.preventDefault();
+	        var imageForm = this.refs.image_form;
+	        console.log(imageForm);
+	        var formData = new FormData(imageForm);
+
+	        $.ajax({
+	            url: '/api/upload_image/',
+	            contentType: false,
+	            processData: false,
+	            type: 'POST',
+	            data: formData,
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (data) {
+	                console.log("user image updated");
+	                this.context.router.replace('/app/foodie/' + String(this.state.foodie.id));
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error(this.props.url, status, err.toString());
+	            }.bind(this)
+	        });
+	    },
+	    componentDidMount: function () {
+	        this.loadUserData();
+	    },
+	    loadFoodieData: function (foodie_id) {
+	        $.ajax({
+	            method: 'GET',
+	            url: '/api/foodies/' + String(foodie_id) + '/',
+	            datatype: 'json',
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (res) {
+	                console.log("loading Foodie in form");
+	                this.setState({ foodie: res });
+	                console.log(this.state.foodie);
+	            }.bind(this)
+	        });
+	    },
+	    loadUserData: function () {
+	        $.ajax({
+	            method: 'GET',
+	            url: '/api/users/i/',
+	            datatype: 'json',
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (res) {
+	                console.log("loading user in form");
+	                this.setState({ user: res });
+	                console.log("foodie id: " + String(this.state.user.foodie_id));
+	                this.loadFoodieData(this.state.user.foodie_id);
+	            }.bind(this)
+	        });
+	    },
+	    getInitialState: function () {
+	        return { user: [],
+	            foodie: [] };
+	    },
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            null,
+	            React.createElement(Navigation, null),
+	            React.createElement(
+	                Row,
+	                { className: 'sign-up-label text-align-center' },
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'h1',
+	                        null,
+	                        'Edit Profile'
+	                    ),
+	                    React.createElement('br', null)
+	                )
+	            ),
+	            React.createElement(
+	                Row,
+	                null,
+	                React.createElement(
+	                    Row,
+	                    { className: 'sign-up-label text-align-center' },
+	                    React.createElement(
+	                        'h3',
+	                        null,
+	                        'Profile Image'
+	                    )
+	                ),
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'form',
+	                        { id: 'image_form', ref: 'image_form', encType: 'multipart/form-data', method: 'POST', onSubmit: this.updateProfileImage },
+	                        React.createElement(
+	                            FormGroup,
+	                            null,
+	                            React.createElement(
+	                                FormControlLabel,
+	                                null,
+	                                'Profile Image'
+	                            ),
+	                            React.createElement(FormControl, { name: 'image', type: 'file', placeholder: 'Profile Image', ref: 'profile_image' }),
+	                            ' ',
+	                            React.createElement('br', null),
+	                            React.createElement(
+	                                Button,
+	                                { type: 'submit' },
+	                                'Edit'
+	                            )
+	                        )
+	                    )
+	                )
+	            ),
+	            React.createElement(
+	                Row,
+	                null,
+	                React.createElement(
+	                    Row,
+	                    { className: 'sign-up-label text-align-center' },
+	                    React.createElement(
+	                        'h3',
+	                        null,
+	                        'Account Basics'
+	                    )
+	                ),
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'form',
+	                        { onSubmit: this.handleProfileEdit },
+	                        React.createElement(
+	                            FormGroup,
+	                            null,
+	                            React.createElement(
+	                                FormControlLabel,
+	                                null,
+	                                'Foodie Name'
+	                            ),
+	                            React.createElement(FormControl, { type: 'text', placeholder: this.state.user.username, ref: 'signup_username' }),
+	                            React.createElement('br', null),
+	                            React.createElement(
+	                                FormControlLabel,
+	                                null,
+	                                'Email'
+	                            ),
+	                            React.createElement(FormControl, { type: 'text', placeholder: this.state.user.email, ref: 'signup_email' }),
+	                            ' ',
+	                            React.createElement('br', null),
+	                            React.createElement(
+	                                Button,
+	                                { type: 'submit' },
+	                                'Edit'
+	                            )
+	                        )
+	                    )
+	                )
+	            ),
+	            React.createElement(
+	                Row,
+	                null,
+	                React.createElement(
+	                    Row,
+	                    { className: 'sign-up-label text-align-center' },
+	                    React.createElement(
+	                        'h3',
+	                        null,
+	                        'Password'
+	                    )
+	                ),
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'form',
+	                        { onSubmit: this.handlePasswordEdit },
+	                        React.createElement(
+	                            FormGroup,
+	                            null,
+	                            React.createElement(
+	                                FormControlLabel,
+	                                null,
+	                                'Current Password'
+	                            ),
+	                            React.createElement(FormControl, { type: 'password', placeholder: 'current password', ref: 'signup_pass' }),
+	                            React.createElement('br', null),
+	                            React.createElement(
+	                                FormControlLabel,
+	                                null,
+	                                'New Password'
+	                            ),
+	                            React.createElement(FormControl, { type: 'password', placeholder: 'new password', ref: 'new_signup_pass' }),
+	                            React.createElement('br', null),
+	                            React.createElement(
+	                                FormControlLabel,
+	                                null,
+	                                'Confirm New Password'
+	                            ),
+	                            React.createElement(FormControl, { type: 'password', placeholder: 'confirm new password', ref: 'new_pass_confirm' }),
+	                            ' ',
+	                            React.createElement('br', null),
+	                            React.createElement(
+	                                Button,
+	                                { type: 'submit' },
+	                                'Edit'
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = EditProfile;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ }

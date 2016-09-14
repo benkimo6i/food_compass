@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from django.db import models
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
+from django.utils.text import slugify
 # Create your models here.
 
 POLLS_STATUS_CHOICES = (('open', 'Open'),
@@ -11,10 +12,28 @@ POLLS_STATUS_CHOICES = (('open', 'Open'),
 
 
 
+
 class Foodie(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     def __unicode__(self):
         return self.user.username
+
+def image_upload_to(instance, filename):
+    title = instance.owner.user.username
+    print("Image title: "+title)
+    slug = slugify(title)
+    return "profile_images/%s/%s" %(slug, filename)
+
+class ProfileImage(models.Model):
+    owner = models.ForeignKey(Foodie)
+    datafile = models.ImageField(upload_to=image_upload_to)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return str(self.datafile)
+
+
 
 class Restaurant(models.Model):
     name = models.CharField(max_length = 120)

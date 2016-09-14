@@ -1,3 +1,17 @@
 body {
-    background-color: pink;
+    background-color: white;
 }
+
+.text-align-center {
+        text-align:center;
+}
+
+.poll-row {
+    border-top: 2px solid green;
+    padding-bottom: 12px;
+}
+
+.ProfileImageSection {
+   padding-bottom: 7px;
+}
+

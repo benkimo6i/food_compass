@@ -4,7 +4,10 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.test import APITestCase
-from api.models import Foodie,Restaurant, Poll, Vote
+from api.models import Foodie,Restaurant, Poll, Vote, ProfileImage
+from django.core.urlresolvers import reverse
+from urlparse import urlparse
+from django.conf import settings
 
 # Create your tests here.
 
@@ -13,8 +16,9 @@ class UserTests(TestCase):
         """
         Ensure we can create a new User object.
         """
-        data = {'username': 'test_user', 'email':'test@test.com', 'password':'123qazwsx', 'confirm_pass':'123qazwsx'}
+        data = {'username': 'test_user', 'email':'test@test.com', 'password':'123qazwsx', 'confirm_pass':'123qazwsx', "new_pass":"", "new_confirm_pass":""}
         response = self.client.post('/api/users/', data, format='json')
+        print (response)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(User.objects.get().username, 'test_user')
@@ -151,6 +155,8 @@ class VoteTests(APITestCase):
             #should remain the same
             self.assertEqual(Vote.objects.get().choice, self.choice)
             self.assertEqual(Vote.objects.get().foodie, self.foodie2)
+
+
 
 
 
