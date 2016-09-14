@@ -146,6 +146,18 @@ if DEBUG:
     )
 
 if not DEBUG:
+    import dj_database_url
+    PREPEND_URL = "sleepy-anchorage-76452.herokuapp.com/"
+
+
+    DATABASES['default'] =  dj_database_url.config()
+
+    # Honor the 'X-Forwarded-Proto' header for request.is_secure()
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+    SECURE_SSL_REDIRECT = True
+    # Allow all host headers
+    ALLOWED_HOSTS = ['*']
+
     AWS_STORAGE_BUCKET_NAME = 'foodcompass'
     AWS_ACCESS_KEY_ID = 'AKIAIWWPYMRO7FTYHTPA'
     AWS_SECRET_ACCESS_KEY = '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'
