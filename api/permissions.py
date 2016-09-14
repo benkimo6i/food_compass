@@ -27,3 +27,7 @@ class IsOwnerOrStaffElseReadonly_Vote(permissions.BasePermission):
 class IsPollOwnerOrStaffElseReadonly_Vote(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
             return obj.creator.user == request.user or request.user.is_staff
+
+class IsImageOwnerOrStaffElseReadonly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+            return obj.owner == request.user.foodie or request.user.is_staff
