@@ -56199,10 +56199,11 @@
 	      },
 	      success: function (res) {
 	        console.log(res);
-	        console.log(res.profileimage_set[0].datafile);
-	        var profile_image_url = res.profileimage_set[0].datafile;
 	        this.setState({ foodie: res });
-	        this.setState({ profile_image_url: profile_image_url });
+	        if (res.profileimage_set.length > 0) {
+	          var profile_image_url = res.profileimage_set[0].datafile;
+	          this.setState({ profile_image_url: profile_image_url });
+	        }
 	        this.setState({ username: res.user.username });
 	        this.setState({ foodie_pk: res.id });
 	      }.bind(this)

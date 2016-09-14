@@ -9,6 +9,7 @@ var CmsHeader = require('./navbar');
 var FormGroup = ReactBootstrap.FormGroup;
 var FormControl = ReactBootstrap.FormControl;
 var ProfileImage = ReactBootstrap.Image;
+var Router = require('react-router');
 
 var Navigation = React.createClass({
     render: function() {
@@ -21,6 +22,12 @@ var Navigation = React.createClass({
 });
 
 var FoodieProfile = React.createClass({
+  goToEditProfile: function() {
+        this.context.router.push('/app/edit_profile/');
+  },
+  contextTypes: {
+        router: React.PropTypes.object.isRequired
+  },
   loadFoodieData: function(foodie_id){
         $.ajax({
             method: 'GET',
@@ -32,14 +39,20 @@ var FoodieProfile = React.createClass({
             success: function(res) {
                 console.log(res);
                 this.setState({foodie: res});
+                if (res.profileimage_set.length > 0) {
+                    var profile_image_url = res.profileimage_set[0].datafile;
+                    this.setState({profile_image_url:profile_image_url});
+                }
                 this.setState({username:res.user.username});
                 this.setState({foodie_pk:res.id});
+
             }.bind(this)
         })
   },
   getInitialState: function() {
     return {
         foodie:[],
+        profile_image_url:"https://cdn4.iconfinder.com/data/icons/standard-free-icons/139/Profile01-128.png",
         user:[],
         username:[],
         foodie_pk:[],
@@ -57,18 +70,16 @@ var FoodieProfile = React.createClass({
           <div className="Profile">
             <Row className="text-align-center">
                 <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
+                      <Row>
                            <Col xs={12} md={12}>
                                 <h1>{this.state.username}</h1>
                            </Col>
-                           <div className="ProfileImageSection">
-                               <Col xs={8} xsOffset={2} sm={4} smOffset={4}>
-                                    <ProfileImage src="https://pbs.twimg.com/profile_images/565565846664130560/tqY8myCa.jpeg" circle responsive/>
-                               </Col>
-                           </div>
-                           <br/>
-                           <br/>
+                           <Col xs={8} xsOffset={2} sm={4} smOffset={4}>
+                                    <ProfileImage src={this.state.profile_image_url} circle responsive/>
+                           </Col>
+                      </Row>
                            <Col xs={12} md={12}>
-                               <Button type="submit">Edit Profile</Button>
+                               <Button type="submit" onClick={this.goToEditProfile} className="editProfile">Edit Profile</Button>
                            </Col>
                 </Col>
             </Row>

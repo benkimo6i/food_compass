@@ -267,7 +267,7 @@ var PollForm = React.createClass({
       },
       success: function(data) {
             console.log("poll submitted");
-            this.context.router.replace('/app/')
+            this.context.router.replace('/app/');
       }.bind(this),
       error: function(xhr, status, err) {
         this.setState({data: poll});

@@ -46,6 +46,8 @@ module.exports = {
                     email:email,
                     password: pass,
                     confirm_pass: confirm_pass,
+                    new_pass: null,
+                    new_confirm_pass: null,
                 };
             var context = this;
             $.ajax({
