@@ -1,17 +1,13 @@
 module.exports = {
-    login: function(username, pass, cb) {
+    login: function(username, pass, successFunction) {
         if (localStorage.token) {
-            if (cb) cb(true)
-            return
+            console.log("logging in")
+            successFunction()
         }
-        this.getToken(username, pass, (res) => {
-            if (res.authenticated) {
-                localStorage.token = res.token
-                if (cb) cb(true)
-            } else {
-                if (cb) cb(false)
-            }
-        })
+        else {
+            console.log("logging in 0")
+            this.getTokenAndLogin(username, pass, successFunction)
+        }
     },        
     
     logout: function() {
@@ -38,6 +34,27 @@ module.exports = {
             }
         })
     },
+
+    getTokenAndLogin: function(username, pass, successFunction) {
+        console.log("logging in 1")
+
+        $.ajax({
+            type: 'POST',
+            url: '/api/obtain-auth-token/',
+            data: {
+                username: username.toLowerCase(),
+                password: pass
+            },
+            success: function(res){
+                if (res.authenticated) {
+                    localStorage.token = res.token
+                    console.log("logging in 2")
+                    successFunction()
+                }
+            }
+        })
+    },
+
 
     signUp: function(username, email, pass, confirm_pass, cb) {
         if (pass ===confirm_pass) {

@@ -31,8 +31,27 @@ var loginHeader = React.createClass({
         var username = ReactDOM.findDOMNode(this.refs.username).value;
         var pass = ReactDOM.findDOMNode(this.refs.pass).value;
 
-        auth.login(username, pass, (loggedIn) => {
-            this.context.router.replace('/app/')
+        console.log("attempt login 4 0")
+        this.moveToHomePage(username, pass);
+
+
+    },
+    moveToHomePage: function(username,pass) {
+        console.log("attempt login 4 1")
+        $.ajax({
+            type: 'POST',
+            url: '/api/obtain-auth-token/',
+            data: {
+                username: username.toLowerCase(),
+                password: pass
+            },
+            success: function(res){
+                localStorage.token = res.token;
+                this.context.router.replace('/app/');
+            }.bind(this),
+              error: function(xhr, status, err) {
+                console.error("login failed");
+              }.bind(this)
         })
     },
     handleRegistration: function(e) {
@@ -43,11 +62,38 @@ var loginHeader = React.createClass({
         var confirm_pass = ReactDOM.findDOMNode(this.refs.confirm_signup_pass).value;
 
         if (pass == confirm_pass && !!pass && !!confirm_pass) {
-            auth.signUp(username, email, pass, confirm_pass, (loggedIn) => {
-                this.context.router.replace('/app/')
-            })
+            console.log("testing sign up 0");
+            this.signUp(username, email, pass, confirm_pass);
         }
 
+    },
+    signUp: function(username, email, pass, confirm_pass) {
+        console.log("testing sign up 1");
+        if (pass ===confirm_pass) {
+            console.log("testing sign up 2");
+            var data = {
+                    username: username,
+                    email:email,
+                    password: pass,
+                    confirm_pass: confirm_pass,
+                    new_pass: null,
+                    new_confirm_pass: null,
+                };
+            var context = this;
+            $.ajax({
+                type: 'POST',
+                url: '/api/users/',
+                data: data,
+                success: function(res){
+                    console.log("testing sign up 3");
+                     context.moveToHomePage(username, pass)
+                }.bind(this),
+                  error: function(xhr, status, err) {
+                    console.log("testing sign up 4");
+                    console.log("registration failed");
+                  }.bind(this)
+            })
+        }
     },
     logoutHandler: function() {
         auth.logout()

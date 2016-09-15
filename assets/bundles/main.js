@@ -35287,19 +35287,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {module.exports = {
-	    login: function (username, pass, cb) {
+	    login: function (username, pass, successFunction) {
 	        if (localStorage.token) {
-	            if (cb) cb(true);
-	            return;
+	            console.log("logging in");
+	            successFunction();
+	        } else {
+	            console.log("logging in 0");
+	            this.getTokenAndLogin(username, pass, successFunction);
 	        }
-	        this.getToken(username, pass, res => {
-	            if (res.authenticated) {
-	                localStorage.token = res.token;
-	                if (cb) cb(true);
-	            } else {
-	                if (cb) cb(false);
-	            }
-	        });
 	    },
 
 	    logout: function () {
@@ -35323,6 +35318,26 @@
 	                    authenticated: true,
 	                    token: res.token
 	                });
+	            }
+	        });
+	    },
+
+	    getTokenAndLogin: function (username, pass, successFunction) {
+	        console.log("logging in 1");
+
+	        $.ajax({
+	            type: 'POST',
+	            url: '/api/obtain-auth-token/',
+	            data: {
+	                username: username.toLowerCase(),
+	                password: pass
+	            },
+	            success: function (res) {
+	                if (res.authenticated) {
+	                    localStorage.token = res.token;
+	                    console.log("logging in 2");
+	                    successFunction();
+	                }
 	            }
 	        });
 	    },
@@ -35403,8 +35418,24 @@
 	        var username = this.refs.username.value;
 	        var pass = this.refs.pass.value;
 
-	        auth.login(username, pass, loggedIn => {
-	            this.context.router.replace('/app/');
+	        this.moveToHomePage(username, pass);
+	    },
+	    moveToHomePage: function (username, pass) {
+	        console.log("attempt login 4 1");
+	        $.ajax({
+	            type: 'POST',
+	            url: '/api/obtain-auth-token/',
+	            data: {
+	                username: username.toLowerCase(),
+	                password: pass
+	            },
+	            success: function (res) {
+	                localStorage.token = res.token;
+	                this.context.router.replace('/app/');
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error("login failed");
+	            }.bind(this)
 	        });
 	    },
 	    logoutHandler: function () {
@@ -54905,7 +54936,7 @@
 /* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
 	var auth = __webpack_require__(224);
 	var ReactBootstrap = __webpack_require__(226);
 	var Grid = ReactBootstrap.Grid;
@@ -54939,8 +54970,25 @@
 	        var username = ReactDOM.findDOMNode(this.refs.username).value;
 	        var pass = ReactDOM.findDOMNode(this.refs.pass).value;
 
-	        auth.login(username, pass, loggedIn => {
-	            this.context.router.replace('/app/');
+	        console.log("attempt login 4 0");
+	        this.moveToHomePage(username, pass);
+	    },
+	    moveToHomePage: function (username, pass) {
+	        console.log("attempt login 4 1");
+	        $.ajax({
+	            type: 'POST',
+	            url: '/api/obtain-auth-token/',
+	            data: {
+	                username: username.toLowerCase(),
+	                password: pass
+	            },
+	            success: function (res) {
+	                localStorage.token = res.token;
+	                this.context.router.replace('/app/');
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error("login failed");
+	            }.bind(this)
 	        });
 	    },
 	    handleRegistration: function (e) {
@@ -54951,8 +54999,35 @@
 	        var confirm_pass = ReactDOM.findDOMNode(this.refs.confirm_signup_pass).value;
 
 	        if (pass == confirm_pass && !!pass && !!confirm_pass) {
-	            auth.signUp(username, email, pass, confirm_pass, loggedIn => {
-	                this.context.router.replace('/app/');
+	            console.log("testing sign up 0");
+	            this.signUp(username, email, pass, confirm_pass);
+	        }
+	    },
+	    signUp: function (username, email, pass, confirm_pass) {
+	        console.log("testing sign up 1");
+	        if (pass === confirm_pass) {
+	            console.log("testing sign up 2");
+	            var data = {
+	                username: username,
+	                email: email,
+	                password: pass,
+	                confirm_pass: confirm_pass,
+	                new_pass: null,
+	                new_confirm_pass: null
+	            };
+	            var context = this;
+	            $.ajax({
+	                type: 'POST',
+	                url: '/api/users/',
+	                data: data,
+	                success: function (res) {
+	                    console.log("testing sign up 3");
+	                    context.moveToHomePage(username, pass);
+	                }.bind(this),
+	                error: function (xhr, status, err) {
+	                    console.log("testing sign up 4");
+	                    console.log("registration failed");
+	                }.bind(this)
 	            });
 	        }
 	    },
@@ -55061,6 +55136,7 @@
 	});
 
 	module.exports = loginHeader;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ },
 /* 482 */
