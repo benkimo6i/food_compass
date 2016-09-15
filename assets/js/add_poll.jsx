@@ -62,7 +62,7 @@ var Choice = React.createClass({
         this.loadRestaurantFromServer();
   },
   loadRestaurantFromServer: function() {
-        var restaurants_url = "/api/restaurants/"+String(this.props.restaurant_id);
+        var restaurants_url = "/api/restaurants/"+String(this.props.restaurant_id)+'/';
         $.ajax({
           method: 'GET',
           url: restaurants_url,
@@ -76,7 +76,7 @@ var Choice = React.createClass({
             console.log(data);
           }.bind(this),
           error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
+            console.error("failed to load restaurant");
           }.bind(this)
         });
       },
