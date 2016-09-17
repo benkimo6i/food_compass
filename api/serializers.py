@@ -8,6 +8,7 @@ import googlemaps
 
 
 class UserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(allow_blank=False, write_only=True)
     confirm_pass = serializers.CharField(allow_blank=False, write_only=True)
     new_pass = serializers.CharField(allow_blank=True, write_only=True)
     new_confirm_pass = serializers.CharField(allow_blank=True, write_only=True)
@@ -125,8 +126,8 @@ class RestaurantSerializer(serializers.ModelSerializer):
     avg_review = serializers.DecimalField(max_digits=4, decimal_places=2, read_only=True)
     class Meta:
         model = Restaurant
-        fields = ('id','url', 'name', 'description', 'street','city','state','avg_review')
-        read_only_fields = ('id','url','review_average','avg_review')
+        fields = ('id','url', 'name', 'description', 'street','city','state','avg_review','lat', 'log'  )
+        read_only_fields = ('id','url','review_average','avg_review', 'lat', 'log')
 
     def create(self, validated_data):
         restaurant = Restaurant.objects.create(

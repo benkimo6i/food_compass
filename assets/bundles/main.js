@@ -54,8 +54,8 @@
 	var AddRestaurant = __webpack_require__(483);
 	var AddPoll = __webpack_require__(484);
 	var RestaurantProfile = __webpack_require__(485);
-	var FoodieProfile = __webpack_require__(486);
-	var editProfile = __webpack_require__(487);
+	var FoodieProfile = __webpack_require__(487);
+	var editProfile = __webpack_require__(488);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -35403,7 +35403,7 @@
 	    },
 	    goToFoodieProfile: function () {
 	        var foodie_key = this.state.user.foodie_id;
-	        this.context.router.push('/app/foodie/' + foodie_key);
+	        this.context.router.replace('/app/foodie/' + foodie_key);
 	    },
 	    goAddPoll: function () {
 	        this.context.router.push('/app/add_poll/');
@@ -55794,6 +55794,7 @@
 	var RestaurantPage = __webpack_require__(479);
 	var ControlLabel = ReactBootstrap.ControlLabel;
 	var Checkbox = ReactBootstrap.Checkbox;
+	var googleMap = __webpack_require__(486);
 
 	var Navigation = React.createClass({
 	  displayName: 'Navigation',
@@ -55910,7 +55911,7 @@
 	    });
 	  },
 	  updateSort: function (event) {
-	    console.log("sort update");
+	    console.log("sort update 0");
 	    if (event.target.value == "score") {
 	      this.setState({ sort: "score" }, function () {
 	        console.log(this.state.sort);
@@ -56131,6 +56132,22 @@
 	var RestaurantProfile = React.createClass({
 	  displayName: 'RestaurantProfile',
 
+	  initTripMap: function (lat, lng) {
+	    var geocoder = new google.maps.Geocoder();
+	    var latlng = new google.maps.LatLng(lat, lng);
+	    var isDraggable = $(document).width() > 480 ? true : false; // If document (your website) is wider than 480px, isDraggable = true, else isDraggable = false
+
+	    var mapOptions = {
+	      zoom: 15,
+	      center: latlng
+	    };
+	    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+	    var marker = new google.maps.Marker({
+	      position: latlng,
+	      map: map
+	    });
+	  },
 	  updateAverage: function () {
 	    $.ajax({
 	      method: 'GET',
@@ -56158,6 +56175,7 @@
 	      success: function (data) {
 	        this.setState({ data: data.restaurant });
 	        this.setState({ average_score: data.average_score });
+	        this.initTripMap(parseFloat(data.restaurant.lat), parseFloat(data.restaurant.log));
 	      }.bind(this),
 	      error: function (xhr, status, err) {
 	        console.error("failed to load restaurant");
@@ -56218,6 +56236,19 @@
 	      React.createElement(
 	        Row,
 	        null,
+	        React.createElement(
+	          Col,
+	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          React.createElement(
+	            'div',
+	            { className: 'mapContainer' },
+	            React.createElement('div', { id: 'map', className: 'map' })
+	          )
+	        )
+	      ),
+	      React.createElement(
+	        Row,
+	        null,
 	        React.createElement(ReviewBox, { restaurantPk: this.state.url_param, handleAverageScore: this.updateAverage })
 	      )
 	    );
@@ -56229,6 +56260,53 @@
 
 /***/ },
 /* 486 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var CmsHeader = __webpack_require__(225);
+	var FormGroup = ReactBootstrap.FormGroup;
+	var FormControl = ReactBootstrap.FormControl;
+
+	var googleMap = React.createClass({
+	    displayName: 'googleMap',
+
+
+	    initTripMap: function () {
+	        var geocoder = new google.maps.Geocoder();
+	        var latlng = new google.maps.LatLng(-34.397, 150.644);
+	        var isDraggable = $(document).width() > 480 ? true : false; // If document (your website) is wider than 480px, isDraggable = true, else isDraggable = false
+
+	        var mapOptions = {
+	            zoom: 6,
+	            center: latlng
+	        };
+	        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	    },
+	    componentDidMount: function () {
+	        console.log("creating google map");
+	        this.initTripMap();
+	    },
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'mapContainer' },
+	            React.createElement('div', { id: 'map', className: 'map' })
+	        );
+	    }
+
+	});
+
+	module.exports = googleMap;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
@@ -56282,18 +56360,41 @@
 	        }
 	        this.setState({ username: res.user.username });
 	        this.setState({ foodie_pk: res.id });
+
+	        $.ajax({
+	          method: 'GET',
+	          url: '/api/users/i/',
+	          datatype: 'json',
+	          headers: {
+	            'Authorization': 'Token ' + localStorage.token
+	          },
+	          success: function (user_res) {
+	            console.log("loading user");
+	            console.log(user_res);
+	            console.log(res.user);
+	            if (user_res.id == res.user.id) {
+	              console.log("loading user loaded");
+	              this.setState({ user: user_res });
+	            }
+	          }.bind(this)
+	        });
 	      }.bind(this)
 	    });
 	  },
 	  getInitialState: function () {
 	    return {
+
 	      foodie: [],
 	      profile_image_url: "https://cdn4.iconfinder.com/data/icons/standard-free-icons/139/Profile01-128.png",
-	      user: [],
+	      user: null,
+	      can_edit_profile: false,
 	      username: [],
 	      foodie_pk: [],
 	      url_param: this.props.params.id
 	    };
+	  },
+	  componentWillReceiveProps: function (nextProps) {
+	    window.location.reload();
 	  },
 	  componentDidMount: function () {
 	    console.log("profile mounting");
@@ -56333,7 +56434,7 @@
 	            ),
 	            React.createElement(
 	              Col,
-	              { xs: 12, md: 12 },
+	              { xs: 12, md: 12, className: this.state.user ? '' : 'hidden' },
 	              React.createElement(
 	                Button,
 	                { type: 'submit', onClick: this.goToEditProfile, className: 'editProfile' },
@@ -56471,7 +56572,7 @@
 	  },
 	  componentDidMount: function () {
 	    console.log("loading reviews");
-	    setTimeout(this.loadReviewsFromServer, 500);
+	    setTimeout(this.loadReviewsFromServer, 800);
 	  },
 	  render: function () {
 	    return React.createElement(
@@ -56542,7 +56643,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ },
-/* 487 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);

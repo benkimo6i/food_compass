@@ -14,6 +14,7 @@ var CmsHeader = require('./navbar');
 var RestaurantPage = require('./restaurant');
 var ControlLabel = ReactBootstrap.ControlLabel;
 var Checkbox = ReactBootstrap.Checkbox;
+var googleMap = require('./google_map');
 
 var Navigation = React.createClass({
     render: function() {
@@ -24,6 +25,8 @@ var Navigation = React.createClass({
         );
     }
 });
+
+
 
 var Review = React.createClass({
   goToFoodieProfile: function() {
@@ -93,7 +96,7 @@ var ReviewBox = React.createClass({
     });
   },
   updateSort: function(event) {
-    console.log("sort update");
+    console.log("sort update 0");
     if (event.target.value == "score") {
         this.setState({sort: "score"}, function() {
             console.log(this.state.sort);
@@ -249,6 +252,22 @@ var ReviewForm = React.createClass({
 });
 
 var RestaurantProfile = React.createClass({
+  initTripMap: function (lat, lng) {
+        var geocoder = new google.maps.Geocoder();
+        var latlng = new google.maps.LatLng(lat, lng);
+        var isDraggable = $(document).width() > 480 ? true : false; // If document (your website) is wider than 480px, isDraggable = true, else isDraggable = false
+
+        var mapOptions = {
+              zoom: 15,
+              center: latlng,
+        }
+        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+        var marker = new google.maps.Marker({
+            position: latlng,
+            map: map
+        });
+  },
   updateAverage: function() {
         $.ajax({
           method: 'GET',
@@ -276,6 +295,7 @@ var RestaurantProfile = React.createClass({
           success: function(data) {
             this.setState({data: data.restaurant});
             this.setState({average_score:data.average_score});
+            this.initTripMap(parseFloat(data.restaurant.lat), parseFloat(data.restaurant.log));
           }.bind(this),
           error: function(xhr, status, err) {
             console.error("failed to load restaurant");
@@ -304,6 +324,7 @@ var RestaurantProfile = React.createClass({
                    <br/>
               </Col>
         </Row>
+
         <Row className='text-align-center'>
               <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
                 <span>
@@ -314,6 +335,14 @@ var RestaurantProfile = React.createClass({
                     {this.state.data.description}
                 </span>
               </Col>
+        </Row>
+        <Row>
+            <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
+                <div className ="mapContainer">
+                    <div id="map" className="map">
+                    </div>
+                </div>
+            </Col>
         </Row>
         <Row>
             <ReviewBox restaurantPk={this.state.url_param} handleAverageScore={this.updateAverage}/>

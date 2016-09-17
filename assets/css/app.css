@@ -20,3 +20,15 @@ body {
 
 }
 
+.hidden { display:none; }
+
+.mapContainer {
+        background-color:pink;
+
+            height: 275px;
+}
+
+.map {
+        height: 275px;
+
+}

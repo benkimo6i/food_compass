@@ -29,7 +29,7 @@ var CmsHeader = React.createClass({
     },
     goToFoodieProfile: function() {
         var foodie_key = this.state.user.foodie_id;
-        this.context.router.push('/app/foodie/'+foodie_key);
+        this.context.router.replace('/app/foodie/'+foodie_key);
     },
     goAddPoll: function() {
         this.context.router.push('/app/add_poll/');

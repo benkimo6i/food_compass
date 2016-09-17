@@ -54,8 +54,8 @@
 	var AddRestaurant = __webpack_require__(483);
 	var AddPoll = __webpack_require__(484);
 	var RestaurantProfile = __webpack_require__(485);
-	var FoodieProfile = __webpack_require__(486);
-	var editProfile = __webpack_require__(487);
+	var FoodieProfile = __webpack_require__(487);
+	var editProfile = __webpack_require__(488);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -35287,19 +35287,14 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {module.exports = {
-	    login: function (username, pass, cb) {
+	    login: function (username, pass, successFunction) {
 	        if (localStorage.token) {
-	            if (cb) cb(true);
-	            return;
+	            console.log("logging in");
+	            successFunction();
+	        } else {
+	            console.log("logging in 0");
+	            this.getTokenAndLogin(username, pass, successFunction);
 	        }
-	        this.getToken(username, pass, res => {
-	            if (res.authenticated) {
-	                localStorage.token = res.token;
-	                if (cb) cb(true);
-	            } else {
-	                if (cb) cb(false);
-	            }
-	        });
 	    },
 
 	    logout: function () {
@@ -35323,6 +35318,26 @@
 	                    authenticated: true,
 	                    token: res.token
 	                });
+	            }
+	        });
+	    },
+
+	    getTokenAndLogin: function (username, pass, successFunction) {
+	        console.log("logging in 1");
+
+	        $.ajax({
+	            type: 'POST',
+	            url: '/api/obtain-auth-token/',
+	            data: {
+	                username: username.toLowerCase(),
+	                password: pass
+	            },
+	            success: function (res) {
+	                if (res.authenticated) {
+	                    localStorage.token = res.token;
+	                    console.log("logging in 2");
+	                    successFunction();
+	                }
 	            }
 	        });
 	    },
@@ -35388,7 +35403,7 @@
 	    },
 	    goToFoodieProfile: function () {
 	        var foodie_key = this.state.user.foodie_id;
-	        this.context.router.push('/app/foodie/' + foodie_key);
+	        this.context.router.replace('/app/foodie/' + foodie_key);
 	    },
 	    goAddPoll: function () {
 	        this.context.router.push('/app/add_poll/');
@@ -35403,8 +35418,24 @@
 	        var username = this.refs.username.value;
 	        var pass = this.refs.pass.value;
 
-	        auth.login(username, pass, loggedIn => {
-	            this.context.router.replace('/app/');
+	        this.moveToHomePage(username, pass);
+	    },
+	    moveToHomePage: function (username, pass) {
+	        console.log("attempt login 4 1");
+	        $.ajax({
+	            type: 'POST',
+	            url: '/api/obtain-auth-token/',
+	            data: {
+	                username: username.toLowerCase(),
+	                password: pass
+	            },
+	            success: function (res) {
+	                localStorage.token = res.token;
+	                this.context.router.replace('/app/');
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error("login failed");
+	            }.bind(this)
 	        });
 	    },
 	    logoutHandler: function () {
@@ -54549,7 +54580,7 @@
 	    this.loadRestaurantFromServer();
 	  },
 	  loadRestaurantFromServer: function () {
-	    var restaurants_url = "/api/restaurants/" + String(this.props.restaurant_id);
+	    var restaurants_url = "/api/restaurants/" + String(this.props.restaurant_id) + '/';
 	    $.ajax({
 	      method: 'GET',
 	      url: restaurants_url,
@@ -54563,7 +54594,7 @@
 	        console.log(data);
 	      }.bind(this),
 	      error: function (xhr, status, err) {
-	        console.error(this.props.url, status, err.toString());
+	        console.error("failed to load restaurant");
 	      }.bind(this)
 	    });
 	  },
@@ -54905,7 +54936,7 @@
 /* 481 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(1);
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
 	var auth = __webpack_require__(224);
 	var ReactBootstrap = __webpack_require__(226);
 	var Grid = ReactBootstrap.Grid;
@@ -54939,8 +54970,25 @@
 	        var username = ReactDOM.findDOMNode(this.refs.username).value;
 	        var pass = ReactDOM.findDOMNode(this.refs.pass).value;
 
-	        auth.login(username, pass, loggedIn => {
-	            this.context.router.replace('/app/');
+	        console.log("attempt login 4 0");
+	        this.moveToHomePage(username, pass);
+	    },
+	    moveToHomePage: function (username, pass) {
+	        console.log("attempt login 4 1");
+	        $.ajax({
+	            type: 'POST',
+	            url: '/api/obtain-auth-token/',
+	            data: {
+	                username: username.toLowerCase(),
+	                password: pass
+	            },
+	            success: function (res) {
+	                localStorage.token = res.token;
+	                this.context.router.replace('/app/');
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error("login failed");
+	            }.bind(this)
 	        });
 	    },
 	    handleRegistration: function (e) {
@@ -54951,8 +54999,35 @@
 	        var confirm_pass = ReactDOM.findDOMNode(this.refs.confirm_signup_pass).value;
 
 	        if (pass == confirm_pass && !!pass && !!confirm_pass) {
-	            auth.signUp(username, email, pass, confirm_pass, loggedIn => {
-	                this.context.router.replace('/app/');
+	            console.log("testing sign up 0");
+	            this.signUp(username, email, pass, confirm_pass);
+	        }
+	    },
+	    signUp: function (username, email, pass, confirm_pass) {
+	        console.log("testing sign up 1");
+	        if (pass === confirm_pass) {
+	            console.log("testing sign up 2");
+	            var data = {
+	                username: username,
+	                email: email,
+	                password: pass,
+	                confirm_pass: confirm_pass,
+	                new_pass: null,
+	                new_confirm_pass: null
+	            };
+	            var context = this;
+	            $.ajax({
+	                type: 'POST',
+	                url: '/api/users/',
+	                data: data,
+	                success: function (res) {
+	                    console.log("testing sign up 3");
+	                    context.moveToHomePage(username, pass);
+	                }.bind(this),
+	                error: function (xhr, status, err) {
+	                    console.log("testing sign up 4");
+	                    console.log("registration failed");
+	                }.bind(this)
 	            });
 	        }
 	    },
@@ -55061,6 +55136,7 @@
 	});
 
 	module.exports = loginHeader;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ },
 /* 482 */
@@ -55355,7 +55431,7 @@
 	    this.loadRestaurantFromServer();
 	  },
 	  loadRestaurantFromServer: function () {
-	    var restaurants_url = "/api/restaurants/" + String(this.props.restaurant_id);
+	    var restaurants_url = "/api/restaurants/" + String(this.props.restaurant_id) + '/';
 	    $.ajax({
 	      method: 'GET',
 	      url: restaurants_url,
@@ -55369,7 +55445,7 @@
 	        console.log(data);
 	      }.bind(this),
 	      error: function (xhr, status, err) {
-	        console.error(this.props.url, status, err.toString());
+	        console.error("failed to load restaurant");
 	      }.bind(this)
 	    });
 	  },
@@ -55718,6 +55794,7 @@
 	var RestaurantPage = __webpack_require__(479);
 	var ControlLabel = ReactBootstrap.ControlLabel;
 	var Checkbox = ReactBootstrap.Checkbox;
+	var googleMap = __webpack_require__(486);
 
 	var Navigation = React.createClass({
 	  displayName: 'Navigation',
@@ -55834,7 +55911,7 @@
 	    });
 	  },
 	  updateSort: function (event) {
-	    console.log("sort update");
+	    console.log("sort update 0");
 	    if (event.target.value == "score") {
 	      this.setState({ sort: "score" }, function () {
 	        console.log(this.state.sort);
@@ -56052,6 +56129,23 @@
 	  }
 	});
 
+	var googleMap = React.createClass({
+	  displayName: 'googleMap',
+
+
+	  componentDidMount: function () {
+	    console.log("creating google map");
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'mapContainer' },
+	      React.createElement('div', { id: 'map', className: 'map' }),
+	      'hello'
+	    );
+	  }
+	});
+
 	var RestaurantProfile = React.createClass({
 	  displayName: 'RestaurantProfile',
 
@@ -56074,7 +56168,7 @@
 	  loadRestaurantsFromServer: function () {
 	    $.ajax({
 	      method: 'GET',
-	      url: '/api/restaurants/' + this.state.url_param,
+	      url: '/api/restaurants/' + this.state.url_param + '/',
 	      dataType: 'json',
 	      headers: {
 	        'Authorization': 'Token ' + localStorage.token
@@ -56084,7 +56178,7 @@
 	        this.setState({ average_score: data.average_score });
 	      }.bind(this),
 	      error: function (xhr, status, err) {
-	        console.error(this.props.url, status, err.toString());
+	        console.error("failed to load restaurant");
 	      }.bind(this)
 	    });
 	  },
@@ -56116,6 +56210,15 @@
 	            this.state.data.name
 	          ),
 	          React.createElement('br', null)
+	        )
+	      ),
+	      React.createElement(
+	        Row,
+	        null,
+	        React.createElement(
+	          Col,
+	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          React.createElement('googleMap', null)
 	        )
 	      ),
 	      React.createElement(
@@ -56153,6 +56256,12 @@
 
 /***/ },
 /* 486 */
+/***/ function(module, exports) {
+
+	
+
+/***/ },
+/* 487 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
@@ -56206,18 +56315,41 @@
 	        }
 	        this.setState({ username: res.user.username });
 	        this.setState({ foodie_pk: res.id });
+
+	        $.ajax({
+	          method: 'GET',
+	          url: '/api/users/i/',
+	          datatype: 'json',
+	          headers: {
+	            'Authorization': 'Token ' + localStorage.token
+	          },
+	          success: function (user_res) {
+	            console.log("loading user");
+	            console.log(user_res);
+	            console.log(res.user);
+	            if (user_res.id == res.user.id) {
+	              console.log("loading user loaded");
+	              this.setState({ user: user_res });
+	            }
+	          }.bind(this)
+	        });
 	      }.bind(this)
 	    });
 	  },
 	  getInitialState: function () {
 	    return {
+
 	      foodie: [],
 	      profile_image_url: "https://cdn4.iconfinder.com/data/icons/standard-free-icons/139/Profile01-128.png",
-	      user: [],
+	      user: null,
+	      can_edit_profile: false,
 	      username: [],
 	      foodie_pk: [],
 	      url_param: this.props.params.id
 	    };
+	  },
+	  componentWillReceiveProps: function (nextProps) {
+	    window.location.reload();
 	  },
 	  componentDidMount: function () {
 	    console.log("profile mounting");
@@ -56257,7 +56389,7 @@
 	            ),
 	            React.createElement(
 	              Col,
-	              { xs: 12, md: 12 },
+	              { xs: 12, md: 12, className: this.state.user ? '' : 'hidden' },
 	              React.createElement(
 	                Button,
 	                { type: 'submit', onClick: this.goToEditProfile, className: 'editProfile' },
@@ -56395,7 +56527,7 @@
 	  },
 	  componentDidMount: function () {
 	    console.log("loading reviews");
-	    setTimeout(this.loadReviewsFromServer, 500);
+	    setTimeout(this.loadReviewsFromServer, 800);
 	  },
 	  render: function () {
 	    return React.createElement(
@@ -56466,7 +56598,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ },
-/* 487 */
+/* 488 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);

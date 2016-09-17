@@ -14,6 +14,7 @@ var CmsHeader = require('./navbar');
 var RestaurantPage = require('./restaurant');
 var ControlLabel = ReactBootstrap.ControlLabel;
 var Checkbox = ReactBootstrap.Checkbox;
+var googleMap = require('./google_map');
 
 var Navigation = React.createClass({
     render: function() {
@@ -24,6 +25,8 @@ var Navigation = React.createClass({
         );
     }
 });
+
+
 
 var Review = React.createClass({
   goToFoodieProfile: function() {
@@ -93,7 +96,7 @@ var ReviewBox = React.createClass({
     });
   },
   updateSort: function(event) {
-    console.log("sort update");
+    console.log("sort update 0");
     if (event.target.value == "score") {
         this.setState({sort: "score"}, function() {
             console.log(this.state.sort);
@@ -248,6 +251,25 @@ var ReviewForm = React.createClass({
   }
 });
 
+
+var googleMap = React.createClass({
+
+    componentDidMount: function() {
+        console.log("creating google map");
+
+    },
+    render: function() {
+        return (
+            <div className ="mapContainer">
+                <div id="map" className="map">
+                </div>
+                hello
+            </div>
+        );
+    }
+});
+
+
 var RestaurantProfile = React.createClass({
   updateAverage: function() {
         $.ajax({
@@ -268,7 +290,7 @@ var RestaurantProfile = React.createClass({
   loadRestaurantsFromServer: function() {
         $.ajax({
           method: 'GET',
-          url: '/api/restaurants/'+this.state.url_param,
+          url: '/api/restaurants/'+this.state.url_param+'/',
           dataType: 'json',
           headers: {
                 'Authorization': 'Token ' + localStorage.token
@@ -278,7 +300,7 @@ var RestaurantProfile = React.createClass({
             this.setState({average_score:data.average_score});
           }.bind(this),
           error: function(xhr, status, err) {
-            console.error(this.props.url, status, err.toString());
+            console.error("failed to load restaurant");
           }.bind(this)
         });
       },
@@ -303,6 +325,13 @@ var RestaurantProfile = React.createClass({
                    <h1>{this.state.data.name}</h1>
                    <br/>
               </Col>
+        </Row>
+
+        <Row>
+            <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
+                   <googleMap/>
+              </Col>
+
         </Row>
         <Row className='text-align-center'>
               <Col xs={8} md={6} xsOffset={2} mdOffset={3}>

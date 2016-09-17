@@ -90,11 +90,11 @@ class FoodieViewSet(viewsets.ModelViewSet):
     queryset = Foodie.objects.all()
     serializer_class = FoodieSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_permissions(self):
-        return (IsStaffOrTargetUser() if self.request.method not in permissions.SAFE_METHODS
-                else permissions.IsAuthenticated()),
+    # permission_classes = (permissions.IsAuthenticated,)
+    #
+    # def get_permissions(self):
+    #     return (IsStaffOrTargetUser() if self.request.method not in permissions.SAFE_METHODS
+    #             else permissions.IsAuthenticated()),
 
 class ProfileImageViewSet(viewsets.ModelViewSet):
     queryset = ProfileImage.objects.all()

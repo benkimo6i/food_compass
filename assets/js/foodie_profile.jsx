@@ -46,18 +46,43 @@ var FoodieProfile = React.createClass({
                 this.setState({username:res.user.username});
                 this.setState({foodie_pk:res.id});
 
+                $.ajax({
+                    method: 'GET',
+                    url: '/api/users/i/',
+                    datatype: 'json',
+                    headers: {
+                        'Authorization': 'Token ' + localStorage.token
+                    },
+                    success: function(user_res) {
+                        console.log("loading user");
+                        console.log(user_res);
+                        console.log(res.user);
+                        if (user_res.id == res.user.id) {
+                            console.log("loading user loaded");
+                            this.setState({user:user_res});
+                        }
+                    }.bind(this)
+                })
+
+
+
             }.bind(this)
         })
   },
   getInitialState: function() {
     return {
+
         foodie:[],
         profile_image_url:"https://cdn4.iconfinder.com/data/icons/standard-free-icons/139/Profile01-128.png",
-        user:[],
+        user:null,
+        can_edit_profile:false,
         username:[],
         foodie_pk:[],
         url_param: this.props.params.id,
     };
+  },
+  componentWillReceiveProps: function(nextProps) {
+        window.location.reload();
   },
   componentDidMount: function() {
     console.log("profile mounting");
@@ -78,7 +103,7 @@ var FoodieProfile = React.createClass({
                                     <ProfileImage src={this.state.profile_image_url} circle responsive/>
                            </Col>
                       </Row>
-                           <Col xs={12} md={12}>
+                           <Col xs={12} md={12} className={this.state.user ? ''  : 'hidden'}>
                                <Button type="submit" onClick={this.goToEditProfile} className="editProfile">Edit Profile</Button>
                            </Col>
                 </Col>
@@ -172,7 +197,7 @@ var ReviewBox = React.createClass({
   },
   componentDidMount: function() {
     console.log("loading reviews");
-    setTimeout(this.loadReviewsFromServer, 500);
+    setTimeout(this.loadReviewsFromServer, 800);
   },
   render: function() {
     return (

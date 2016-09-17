@@ -20,3 +20,20 @@ body {
 
 }
 
+.hidden { display:none; }
+
+.mapContainer {
+        background-color:white;
+        right: 0;
+        width: inherit;
+            height: 275px;
+        position: fixed;
+        z-index: 8;
+}
+
+.map {
+        height: 275px;
+        width:inherit;
+        position: absolute;
+        z-index: 9;
+}
