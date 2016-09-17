@@ -56,6 +56,7 @@
 	var RestaurantProfile = __webpack_require__(485);
 	var FoodieProfile = __webpack_require__(487);
 	var editProfile = __webpack_require__(488);
+	var restaurantList = __webpack_require__(489);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -76,6 +77,7 @@
 	    React.createElement(Router.Route, { path: '/app/foodie/:id', component: FoodieProfile }),
 	    React.createElement(Router.Route, { path: '/app/login/', component: Login }),
 	    React.createElement(Router.Route, { path: '/app/test/', component: Test }),
+	    React.createElement(Router.Route, { path: '/app/restaurant/', component: restaurantList }),
 	    React.createElement(Router.Route, { name: 'app', path: '/app/', component: App, onEnter: requireAuth })
 	), document.getElementById('app'));
 
@@ -35398,8 +35400,14 @@
 	    returnHome: function () {
 	        this.context.router.push('/app/');
 	    },
+	    contextTypes: {
+	        router: React.PropTypes.object.isRequired
+	    },
 	    goAddRestaurant: function () {
 	        this.context.router.push('/app/add_restaurant/');
+	    },
+	    goRestaurantListing: function () {
+	        this.context.router.push('/app/restaurant/');
 	    },
 	    goToFoodieProfile: function () {
 	        var foodie_key = this.state.user.foodie_id;
@@ -35407,9 +35415,6 @@
 	    },
 	    goAddPoll: function () {
 	        this.context.router.push('/app/add_poll/');
-	    },
-	    contextTypes: {
-	        router: React.PropTypes.object.isRequired
 	    },
 
 	    handleSubmit: function (e) {
@@ -35496,12 +35501,12 @@
 	                        React.createElement(
 	                            NavItem,
 	                            { eventKey: 2, onClick: this.goAddPoll },
-	                            'Add Poll'
+	                            'Polls'
 	                        ),
 	                        React.createElement(
 	                            NavItem,
-	                            { eventKey: 3, onClick: this.goAddRestaurant },
-	                            'Add Restaurants'
+	                            { eventKey: 3, onClick: this.goRestaurantListing },
+	                            'Restaurants'
 	                        )
 	                    ),
 	                    React.createElement(
@@ -35553,7 +35558,12 @@
 	                        React.createElement(
 	                            NavItem,
 	                            { eventKey: 2, onClick: this.goAddPoll },
-	                            'Add Poll'
+	                            'Polls'
+	                        ),
+	                        React.createElement(
+	                            NavItem,
+	                            { eventKey: 3, onClick: this.goRestaurantListing },
+	                            'Restaurants'
 	                        )
 	                    ),
 	                    React.createElement(
@@ -56316,11 +56326,11 @@
 	var Col = ReactBootstrap.Col;
 	var Input = ReactBootstrap.Input;
 	var Button = ReactBootstrap.Button;
-	var CmsHeader = __webpack_require__(225);
 	var FormGroup = ReactBootstrap.FormGroup;
 	var FormControl = ReactBootstrap.FormControl;
 	var ProfileImage = ReactBootstrap.Image;
 	var Router = __webpack_require__(159);
+	var CmsHeader = __webpack_require__(225);
 
 	var Navigation = React.createClass({
 	  displayName: 'Navigation',
@@ -56949,6 +56959,234 @@
 	});
 
 	module.exports = EditProfile;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 489 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var Router = __webpack_require__(159);
+	var CmsHeader = __webpack_require__(225);
+
+	var Navigation = React.createClass({
+	  displayName: 'Navigation',
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'App' },
+	      React.createElement(CmsHeader, null)
+	    );
+	  }
+	});
+
+	var Restaurant = React.createClass({
+	  displayName: 'Restaurant',
+
+	  MoveToProfile: function (event) {
+	    this.props.handleMoveToProfile(String(this.props.url));
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'restaurant' },
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            'a',
+	            null,
+	            React.createElement(
+	              'h2',
+	              { className: 'restaurantName', onClick: this.MoveToProfile, value: this.props.url },
+	              this.props.name
+	            )
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Review average: ',
+	            this.props.avg_score,
+	            '/10',
+	            React.createElement('br', null),
+	            this.props.children
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var RestaurantPage = React.createClass({
+	  displayName: 'RestaurantPage',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  goAddRestaurant: function () {
+	    this.context.router.push('/app/add_restaurant/');
+	  },
+	  updateSort: function (event) {
+	    console.log("sort update");
+	    if (event.target.value == "score") {
+	      this.setState({ sort: "score" }, function () {
+	        console.log(this.state.sort);
+	        this.loadRestaurantsFromServer();
+	      });
+	    } else if (event.target.value == "added") {
+	      this.setState({ sort: "added" }, function () {
+	        console.log(this.state.sort);
+	        this.loadRestaurantsFromServer();
+	      });
+	    }
+	  },
+	  loadUserFromServer: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/users/i/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (user_res) {
+	        console.log("loading user");
+	        console.log(user_res);
+	        console.log("loading user loaded");
+	        this.setState({ can_edit: user_res.is_staff });
+	      }.bind(this)
+	    });
+	  },
+	  loadRestaurantsFromServer: function () {
+	    var restaurants_url = "/api/restaurants/";
+	    if (this.state.sort == "score") {
+	      console.log("sort by score");
+	      restaurants_url = restaurants_url + "?ordering=avg_review";
+	    } else if (this.state.sort == "added") {
+	      console.log("sort by added");
+	      restaurants_url = restaurants_url + "?ordering=added";
+	    }
+	    $.ajax({
+	      method: 'GET',
+	      url: restaurants_url,
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        this.setState({ data: data });
+	        this.loadUserFromServer();
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return { data: [],
+	      sort: [],
+	      order: [],
+	      can_edit: false
+	    };
+	  },
+	  componentDidMount: function () {
+	    this.loadRestaurantsFromServer();
+	  },
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(Navigation, null),
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            Row,
+	            null,
+	            React.createElement(
+	              'h1',
+	              null,
+	              'Restaurants'
+	            ),
+	            React.createElement('br', null)
+	          ),
+	          React.createElement(
+	            Row,
+	            null,
+	            React.createElement(
+	              Button,
+	              { className: this.state.can_edit ? '' : 'hidden', onClick: this.goAddRestaurant },
+	              'Add Restaurant'
+	            )
+	          ),
+	          React.createElement('br', { className: this.state.can_edit ? '' : 'hidden' }),
+	          React.createElement('br', { className: this.state.can_edit ? '' : 'hidden' }),
+	          React.createElement(
+	            Row,
+	            null,
+	            React.createElement(
+	              'span',
+	              null,
+	              'Sort by: ',
+	              React.createElement(
+	                Button,
+	                { value: 'score', onClick: this.updateSort },
+	                'Score'
+	              ),
+	              ' ',
+	              React.createElement(
+	                Button,
+	                { value: 'added', onClick: this.updateSort },
+	                'Date'
+	              )
+	            ),
+	            React.createElement(RestaurantList, { data: this.state.data })
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var RestaurantList = React.createClass({
+	  displayName: 'RestaurantList',
+
+	  goToRestaurantProfile: function (restaurantKey) {
+	    this.context.router.push('/app/restaurant/' + String(restaurantKey));
+	  },
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  render: function () {
+	    var restaurantNodes = this.props.data.map(function (restaurant) {
+	      return React.createElement(
+	        Restaurant,
+	        { name: restaurant.name, avg_score: restaurant.avg_review, key: restaurant.id, url: restaurant.id, handleMoveToProfile: this.goToRestaurantProfile },
+	        restaurant.description
+	      );
+	    }, this);
+	    return React.createElement(
+	      'div',
+	      { className: 'restaurantList' },
+	      restaurantNodes
+	    );
+	  }
+	});
+
+	module.exports = RestaurantPage;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ }

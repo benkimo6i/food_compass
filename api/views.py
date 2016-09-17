@@ -20,12 +20,12 @@ import datetime
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_permissions(self):
-        # allow non-authenticated user to create via POST
-        return (AllowAny() if self.request.method == 'POST'
-                else IsStaffOrTargetUser()),
+    # permission_classes = (permissions.IsAuthenticated,)
+    #
+    # def get_permissions(self):
+    #     # allow non-authenticated user to create via POST
+    #     return (AllowAny() if self.request.method == 'POST'
+    #             else IsStaffOrTargetUser()),
 
     def retrieve(self, request, pk=None):
         if pk == 'i':

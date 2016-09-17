@@ -10,6 +10,7 @@ var AddPoll = require('./add_poll')
 var RestaurantProfile = require('./restaurant_profile')
 var FoodieProfile = require('./foodie_profile')
 var editProfile = require('./edit_foodie_profile')
+var restaurantList = require('./restaurantListing')
 
 
 function requireAuth(nextState, replace) {
@@ -31,6 +32,7 @@ ReactDOM.render(
         <Router.Route path='/app/foodie/:id' component={FoodieProfile} />
         <Router.Route path='/app/login/' component={Login} />
         <Router.Route path='/app/test/' component={Test} />
+        <Router.Route path='/app/restaurant/' component={restaurantList} />
         <Router.Route name='app' path='/app/' component={App} onEnter={requireAuth} />
     </Router.Router>,
     document.getElementById('app')

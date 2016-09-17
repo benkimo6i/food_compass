@@ -5,11 +5,11 @@ var Row = ReactBootstrap.Row;
 var Col = ReactBootstrap.Col;
 var Input = ReactBootstrap.Input;
 var Button = ReactBootstrap.Button;
-var CmsHeader = require('./navbar');
 var FormGroup = ReactBootstrap.FormGroup;
 var FormControl = ReactBootstrap.FormControl;
 var ProfileImage = ReactBootstrap.Image;
 var Router = require('react-router');
+var CmsHeader = require('./navbar');
 
 var Navigation = React.createClass({
     render: function() {
