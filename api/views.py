@@ -20,12 +20,12 @@ import datetime
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = (permissions.IsAuthenticated,)
-    #
-    # def get_permissions(self):
-    #     # allow non-authenticated user to create via POST
-    #     return (AllowAny() if self.request.method == 'POST'
-    #             else IsStaffOrTargetUser()),
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        # allow non-authenticated user to create via POST
+        return (AllowAny() if self.request.method == 'POST'
+                else IsStaffOrTargetUser()),
 
     def retrieve(self, request, pk=None):
         if pk == 'i':
@@ -90,11 +90,11 @@ class FoodieViewSet(viewsets.ModelViewSet):
     queryset = Foodie.objects.all()
     serializer_class = FoodieSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    # permission_classes = (permissions.IsAuthenticated,)
-    #
-    # def get_permissions(self):
-    #     return (IsStaffOrTargetUser() if self.request.method not in permissions.SAFE_METHODS
-    #             else permissions.IsAuthenticated()),
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        return (IsStaffOrTargetUser() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
 
 class ProfileImageViewSet(viewsets.ModelViewSet):
     queryset = ProfileImage.objects.all()

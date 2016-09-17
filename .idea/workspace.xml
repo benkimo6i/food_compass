@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66cb48ec-c702-4c4e-b385-e797686bb509" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/django_react_auth/settings.py" afterPath="$PROJECT_DIR$/django_react_auth/settings.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/views.py" afterPath="$PROJECT_DIR$/api/views.py" />
     </list>
     <ignored path="django-react-auth.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -53,10 +53,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.577812">
+            <state vertical-scroll-proportion="-13.888889">
               <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
               <folding />
             </state>
@@ -73,11 +73,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/api/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-2.7777777">
-              <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="27" selection-end-column="46" />
+            <state vertical-scroll-proportion="-0.6009245">
+              <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="96" selection-end-column="52" />
               <folding />
             </state>
           </provider>
@@ -176,10 +176,10 @@
         <option value="$PROJECT_DIR$/assets/js/foodie_profile.jsx" />
         <option value="$PROJECT_DIR$/assets/js/index.jsx" />
         <option value="$PROJECT_DIR$/assets/js/navbar.jsx" />
-        <option value="$PROJECT_DIR$/api/views.py" />
         <option value="$PROJECT_DIR$/assets/js/restaurantListing.jsx" />
         <option value="$PROJECT_DIR$/assets/css/app.css" />
         <option value="$PROJECT_DIR$/django_react_auth/settings.py" />
+        <option value="$PROJECT_DIR$/api/views.py" />
       </list>
     </option>
   </component>
@@ -875,14 +875,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/api/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-2.7777777">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="27" selection-end-column="46" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/assets/js/restaurant_profile.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="-8.0">
@@ -933,8 +925,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.577812">
+        <state vertical-scroll-proportion="-13.888889">
           <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.6009245">
+          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="96" selection-end-column="52" />
           <folding />
         </state>
       </provider>
