@@ -6,6 +6,17 @@ var Col = ReactBootstrap.Col;
 var Input = ReactBootstrap.Input;
 var Button = ReactBootstrap.Button;
 var Router = require('react-router');
+var CmsHeader = require('./navbar');
+
+var Navigation = React.createClass({
+    render: function() {
+        return (
+            <div className="App">
+                <CmsHeader />
+            </div>
+        );
+    }
+});
 
 var Choice = React.createClass({
   handleChoice: function(e) {
@@ -103,9 +114,6 @@ var Poll = React.createClass({
             console.error(this.props.url, status, err.toString());
           }.bind(this)
         });
-  },
-  MoveToProfile: function (event) {
-    this.context.router.push('/app/polls/'+String(this.props.poll_id)+"/");
   },
   getInitialState: function() {
     return {creator_username: '', selected_choice: '',vote_counts:[],vote_check:[],};
@@ -211,9 +219,9 @@ var Poll = React.createClass({
 
     return (
       <div className="Poll">
-        <Row className="text-align-center poll-row">
+        <Row className="text-align-center">
                 <Col xs={12} md={12}>
-                        <a><h2 className="PollName" value={this.props.url} onClick={this.MoveToProfile}>
+                        <a><h2 className="PollName" value={this.props.url}>
                           {this.props.title}
                         </h2></a>
                         <p>Added on: {this.props.added} By: {this.state.creator_username}<br/>
@@ -234,6 +242,12 @@ var Poll = React.createClass({
 });
 
 var PollPage= React.createClass({
+      contextTypes: {
+        router: React.PropTypes.object.isRequired
+      },
+      goAddPoll: function() {
+            this.context.router.push('/app/add_poll/');
+      },
       loadFoodieData: function(foodie_id){
         $.ajax({
             method: 'GET',
@@ -261,8 +275,8 @@ var PollPage= React.createClass({
                 }.bind(this)
             })
       },
-      loadPollsFromServer: function() {
-        var Polls_url = "/api/polls/";
+      loadPollFromServer: function() {
+        var Polls_url = "/api/polls/"+this.state.url_param+"/";
         $.ajax({
           method: 'GET',
           url: Polls_url,
@@ -271,18 +285,17 @@ var PollPage= React.createClass({
                 'Authorization': 'Token ' + localStorage.token
           },
           success: function(data) {
-            this.setState({data: data}, function() {
-                console.log(this.state.data);
-            });
+            this.setState({data: [data.poll]});
           }.bind(this),
           error: function(xhr, status, err) {
             console.log("polls page mounted - loading failed");
-            console.error(this.props.url, status, err.toString());
           }.bind(this)
         });
       },
       getInitialState: function() {
-        return {data: [],
+        return {
+            url_param: this.props.params.id,
+            data: [],
             sort:[],
             order:[],
             user:[],
@@ -290,18 +303,20 @@ var PollPage= React.createClass({
         };
       },
       componentDidMount: function() {
-        this.loadPollsFromServer();
+        this.loadPollFromServer();
         this.loadUserData();
       },
 
     render: function() {
         return (
-            <Row className="text-align-center">
-                <Col xs={12} md={12}>
-                           <h1>Polls</h1>
-                           <PollList data={this.state.data} foodie_id={this.state.foodie.id}/>
-                </Col>
-            </Row>
+            <div>
+            <Navigation/>
+                <Row className="text-align-center">
+                    <Col xs={12} md={12}>
+                        <PollList data={this.state.data} foodie_id={this.state.foodie.id}/>
+                    </Col>
+                </Row>
+            </div>
 
 
         )
@@ -324,5 +339,6 @@ var PollList = React.createClass({
     );
   }
 });
+
 
 module.exports = PollPage;

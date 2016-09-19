@@ -11,6 +11,9 @@ var RestaurantProfile = require('./restaurant_profile')
 var FoodieProfile = require('./foodie_profile')
 var editProfile = require('./edit_foodie_profile')
 var restaurantList = require('./restaurantListing')
+var pollList = require('./pollListing')
+var Poll = require('./poll_detail')
+
 
 
 function requireAuth(nextState, replace) {
@@ -24,16 +27,24 @@ function requireAuth(nextState, replace) {
 
 
 ReactDOM.render(
-    <Router.Router history={Router.browserHistory}>
-        <Router.Route path='/app/add_restaurant/' component={AddRestaurant}/>
-        <Router.Route path='/app/add_poll/' component={AddPoll} />
-        <Router.Route path='/app/edit_profile/' component={editProfile} />
-        <Router.Route path='/app/restaurant/:id' component={RestaurantProfile} />
-        <Router.Route path='/app/foodie/:id' component={FoodieProfile} />
-        <Router.Route path='/app/login/' component={Login} />
-        <Router.Route path='/app/test/' component={Test} />
-        <Router.Route path='/app/restaurant/' component={restaurantList} />
-        <Router.Route name='app' path='/app/' component={App} onEnter={requireAuth} />
-    </Router.Router>,
+        <Router.Router history={ Router.browserHistory }>
+            <Router.Route path='/app/'>
+                <Router.Route path='/app/login/' component={Login} />
+                <Router.Route onEnter={requireAuth}>
+                    <Router.IndexRoute component={App}/>
+                    <Router.Route path='/app/polls/' component={pollList} />
+                    <Router.Route path='/app/add_restaurant/' component={AddRestaurant} />
+                    <Router.Route path='/app/add_poll/' component={AddPoll} />
+                    <Router.Route path='/app/edit_profile/' component={editProfile} />
+                    <Router.Route path='/app/restaurant/:id' component={RestaurantProfile} />
+                    <Router.Route path='/app/foodie/:id' component={FoodieProfile} />
+                    <Router.Route path='/app/test/' component={Test} />
+                    <Router.Route path='/app/restaurant/' component={restaurantList} />
+                    <Router.Route path='/app/polls/' component={pollList} />
+                    <Router.Route path='/app/polls/:id' component={Poll} />
+
+                </Router.Route>
+            </Router.Route>
+        </Router.Router>,
     document.getElementById('app')
 )

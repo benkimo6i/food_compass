@@ -57,6 +57,8 @@
 	var FoodieProfile = __webpack_require__(487);
 	var editProfile = __webpack_require__(488);
 	var restaurantList = __webpack_require__(489);
+	var pollList = __webpack_require__(490);
+	var Poll = __webpack_require__(491);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -70,15 +72,26 @@
 	ReactDOM.render(React.createElement(
 	    Router.Router,
 	    { history: Router.browserHistory },
-	    React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant }),
-	    React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll }),
-	    React.createElement(Router.Route, { path: '/app/edit_profile/', component: editProfile }),
-	    React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile }),
-	    React.createElement(Router.Route, { path: '/app/foodie/:id', component: FoodieProfile }),
-	    React.createElement(Router.Route, { path: '/app/login/', component: Login }),
-	    React.createElement(Router.Route, { path: '/app/test/', component: Test }),
-	    React.createElement(Router.Route, { path: '/app/restaurant/', component: restaurantList }),
-	    React.createElement(Router.Route, { name: 'app', path: '/app/', component: App, onEnter: requireAuth })
+	    React.createElement(
+	        Router.Route,
+	        { path: '/app/' },
+	        React.createElement(Router.Route, { path: '/app/login/', component: Login }),
+	        React.createElement(
+	            Router.Route,
+	            { onEnter: requireAuth },
+	            React.createElement(Router.IndexRoute, { component: App }),
+	            React.createElement(Router.Route, { path: '/app/polls/', component: pollList }),
+	            React.createElement(Router.Route, { path: '/app/add_restaurant/', component: AddRestaurant }),
+	            React.createElement(Router.Route, { path: '/app/add_poll/', component: AddPoll }),
+	            React.createElement(Router.Route, { path: '/app/edit_profile/', component: editProfile }),
+	            React.createElement(Router.Route, { path: '/app/restaurant/:id', component: RestaurantProfile }),
+	            React.createElement(Router.Route, { path: '/app/foodie/:id', component: FoodieProfile }),
+	            React.createElement(Router.Route, { path: '/app/test/', component: Test }),
+	            React.createElement(Router.Route, { path: '/app/restaurant/', component: restaurantList }),
+	            React.createElement(Router.Route, { path: '/app/polls/', component: pollList }),
+	            React.createElement(Router.Route, { path: '/app/polls/:id', component: Poll })
+	        )
+	    )
 	), document.getElementById('app'));
 
 /***/ },
@@ -35409,6 +35422,9 @@
 	    goRestaurantListing: function () {
 	        this.context.router.push('/app/restaurant/');
 	    },
+	    goPollListing: function () {
+	        this.context.router.push('/app/polls/');
+	    },
 	    goToFoodieProfile: function () {
 	        var foodie_key = this.state.user.foodie_id;
 	        this.context.router.replace('/app/foodie/' + foodie_key);
@@ -35500,7 +35516,7 @@
 	                        ),
 	                        React.createElement(
 	                            NavItem,
-	                            { eventKey: 2, onClick: this.goAddPoll },
+	                            { eventKey: 2, onClick: this.goPollListing },
 	                            'Polls'
 	                        ),
 	                        React.createElement(
@@ -35557,7 +35573,7 @@
 	                        ),
 	                        React.createElement(
 	                            NavItem,
-	                            { eventKey: 2, onClick: this.goAddPoll },
+	                            { eventKey: 2, onClick: this.goPollListing },
 	                            'Polls'
 	                        ),
 	                        React.createElement(
@@ -54684,6 +54700,9 @@
 	      }.bind(this)
 	    });
 	  },
+	  MoveToProfile: function (event) {
+	    this.context.router.push('/app/polls/' + String(this.props.poll_id) + "/");
+	  },
 	  getInitialState: function () {
 	    return { creator_username: '', selected_choice: '', vote_counts: [], vote_check: [] };
 	  },
@@ -54799,7 +54818,7 @@
 	            null,
 	            React.createElement(
 	              'h2',
-	              { className: 'PollName', value: this.props.url },
+	              { className: 'PollName', value: this.props.url, onClick: this.MoveToProfile },
 	              this.props.title
 	            )
 	          ),
@@ -55401,7 +55420,7 @@
 	            'a',
 	            null,
 	            React.createElement(
-	              'h2',
+	              'h3',
 	              { className: 'restaurantName', onClick: this.MoveToProfile, value: this.props.url },
 	              this.props.name
 	            )
@@ -55767,6 +55786,9 @@
 	                null,
 	                choiceNodes
 	              ),
+	              React.createElement(RestaurantPage, { handleRestaurantChoice: this.updateRestaurantChoices }),
+	              React.createElement('br', null),
+	              React.createElement('br', null),
 	              React.createElement(
 	                Button,
 	                { type: 'submit' },
@@ -55775,8 +55797,7 @@
 	            )
 	          )
 	        )
-	      ),
-	      React.createElement(RestaurantPage, { handleRestaurantChoice: this.updateRestaurantChoices })
+	      )
 	    );
 	  }
 	});
@@ -57187,6 +57208,829 @@
 	});
 
 	module.exports = RestaurantPage;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 490 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var Router = __webpack_require__(159);
+	var CmsHeader = __webpack_require__(225);
+
+	var Navigation = React.createClass({
+	  displayName: 'Navigation',
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'App' },
+	      React.createElement(CmsHeader, null)
+	    );
+	  }
+	});
+
+	var Choice = React.createClass({
+	  displayName: 'Choice',
+
+	  handleChoice: function (e) {
+	    console.log("picking choice");
+	    console.log(e.currentTarget.value);
+	    this.props.updateChoice(e.currentTarget.value);
+	  },
+	  MoveToProfile: function (event) {
+	    console.log("move calls");
+	    console.log(String(this.props.restaurant_id));
+	    this.props.handleMoveToProfile(String(this.props.restaurant_id));
+	  },
+	  getInitialState: function () {
+	    return { data: '', restaurant: [], selectedChoice: [] };
+	  },
+	  componentDidMount: function () {
+	    this.loadRestaurantFromServer();
+	  },
+	  loadRestaurantFromServer: function () {
+	    var restaurants_url = "/api/restaurants/" + String(this.props.restaurant_id) + '/';
+	    $.ajax({
+	      method: 'GET',
+	      url: restaurants_url,
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        this.setState({ data: data });
+	        this.setState({ restaurant: data.restaurant });
+	        console.log(data);
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error("failed to load restaurant");
+	      }.bind(this)
+	    });
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'restaurant text-align-center' },
+	      React.createElement(
+	        Col,
+	        { xs: 3, md: 3 },
+	        React.createElement(
+	          'a',
+	          null,
+	          React.createElement(
+	            'h2',
+	            { className: 'restaurantName', onClick: this.MoveToProfile, value: this.props.restaurant_id },
+	            this.state.restaurant.name
+	          )
+	        ),
+	        React.createElement(
+	          'p',
+	          null,
+	          'Review average: ',
+	          this.state.data.average_score,
+	          '/10',
+	          React.createElement('br', null),
+	          this.state.restaurant.description
+	        ),
+	        React.createElement('input', { onChange: this.handleChoice, type: 'radio', name: this.props.poll_id, ref: this.props.restaurant_id, value: this.props.restaurant_id })
+	      )
+	    );
+	  }
+	});
+
+	var Poll = React.createClass({
+	  displayName: 'Poll',
+
+	  updateSelectedChoice: function (choice) {
+	    this.setState({ selected_choice: choice }, function () {
+	      console.log("poll choice picked");
+	      console.log(this.state.selected_choice);
+	    });
+	  },
+	  loadCreator: function () {
+	    $.ajax({
+	      method: 'Get',
+	      url: "/api/foodies/" + this.props.creator_name + "/",
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("creator loaded");
+	        console.log(data);
+	        this.setState({ creator_username: data.user.username });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  loadVoteCounts: function () {
+	    $.ajax({
+	      method: 'Get',
+	      url: "/api/polls/" + this.props.poll_id + "/",
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("vote counts loaded");
+	        console.log(data.vote_counts);
+	        this.setState({ vote_counts: data.vote_counts });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return { creator_username: '', selected_choice: '', vote_counts: [], vote_check: [] };
+	  },
+	  componentDidMount: function () {
+	    this.loadCreator();
+	    this.loadVoteCounts();
+	  },
+	  submitVote: function () {
+	    console.log("submitting vote");
+	    var vote_url = "/api/votes/";
+	    var foodie_id = this.props.foodie_id;
+	    var choice = this.state.selected_choice;
+	    var poll_id = this.props.poll_id;
+	    vote_url = vote_url + "?foodie=" + String(foodie_id) + "&poll=" + String(poll_id);
+
+	    $.ajax({
+	      url: vote_url,
+	      contentType: 'application/json; charset=utf-8',
+	      dataType: 'json',
+	      type: 'GET',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (vote_check) {
+	        console.log("check vote state-0");
+	        console.log(vote_url);
+	        console.log("check vote state-1");
+	        this.setState({ vote_check: vote_check }, function () {
+	          if (vote_check.length == 0) {
+	            data = { foodie_pk: foodie_id, choice: choice, poll: poll_id };
+	            console.log("posting vote");
+	            console.log(JSON.stringify(data));
+	            $.ajax({
+	              url: "/api/votes/",
+	              contentType: 'application/json; charset=utf-8',
+	              dataType: 'json',
+	              type: 'POST',
+	              data: JSON.stringify(data),
+	              headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	              },
+	              success: function (data) {
+	                this.loadVoteCounts();
+	              }.bind(this),
+	              error: function (xhr, status, err) {
+	                console.log("vote failed");
+	                console.error(this.props.url, status, err.toString());
+	              }.bind(this)
+	            });
+	          } else {
+	            console.log(vote_check);
+	            data = { foodie_pk: foodie_id, choice: choice, poll: poll_id };
+	            $.ajax({
+	              url: "/api/votes/" + String(this.state.vote_check[0].id) + "/",
+	              contentType: 'application/json; charset=utf-8',
+	              dataType: 'json',
+	              type: 'PUT',
+	              data: JSON.stringify(data),
+	              headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	              },
+	              success: function (data) {
+	                console.log("vote created");
+	                this.loadVoteCounts();
+	              }.bind(this),
+	              error: function (xhr, status, err) {
+	                console.log("vote failed");
+	                console.error(this.props.url, status, err.toString());
+	              }.bind(this)
+	            });
+	          }
+	        });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("vote failed");
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  MoveToProfile: function (event) {
+	    this.context.router.push('/app/polls/' + String(this.props.poll_id) + "/");
+	  },
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  render: function () {
+	    var ChoicesNodes = this.props.choices.map(function (choice) {
+	      return React.createElement(Choice, { updateChoice: this.updateSelectedChoice, restaurant_id: choice, poll_id: this.props.poll_id, handleMoveToProfile: this.goToRestaurantProfile });
+	    }, this);
+	    var VoteCountsNodes = Object.getOwnPropertyNames(this.state.vote_counts).map(function (key) {
+	      var restaurantName = { key };
+	      var voteCount = this.state.vote_counts[key];
+	      return React.createElement(
+	        'div',
+	        null,
+	        key,
+	        ': ',
+	        voteCount
+	      );
+	    }, this);
+
+	    return React.createElement(
+	      'div',
+	      { className: 'Poll' },
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center poll-row' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            'a',
+	            null,
+	            React.createElement(
+	              'h2',
+	              { className: 'PollName', value: this.props.url, onClick: this.MoveToProfile },
+	              this.props.title
+	            )
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Added on: ',
+	            this.props.added,
+	            ' By: ',
+	            this.state.creator_username,
+	            React.createElement('br', null),
+	            this.props.children
+	          ),
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Vote Count'
+	          ),
+	          React.createElement(
+	            'span',
+	            null,
+	            VoteCountsNodes
+	          ),
+	          React.createElement(
+	            Col,
+	            { xs: 12, md: 12 },
+	            ChoicesNodes
+	          )
+	        ),
+	        React.createElement(
+	          Button,
+	          { onClick: this.submitVote },
+	          'Vote'
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var PollPage = React.createClass({
+	  displayName: 'PollPage',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  goAddPoll: function () {
+	    this.context.router.push('/app/add_poll/');
+	  },
+	  loadFoodieData: function (foodie_id) {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/foodies/' + String(foodie_id) + '/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        this.setState({ foodie: res });
+	      }.bind(this)
+	    });
+	  },
+	  loadUserData: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/users/i/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        this.setState({ user: res });
+	        this.loadFoodieData(this.state.user.foodie_id);
+	      }.bind(this)
+	    });
+	  },
+	  loadPollsFromServer: function () {
+	    var Polls_url = "/api/polls/";
+	    $.ajax({
+	      method: 'GET',
+	      url: Polls_url,
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        this.setState({ data: data }, function () {
+	          console.log(this.state.data);
+	        });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("polls page mounted - loading failed");
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return { data: [],
+	      sort: [],
+	      order: [],
+	      user: [],
+	      foodie: []
+	    };
+	  },
+	  componentDidMount: function () {
+	    this.loadPollsFromServer();
+	    this.loadUserData();
+	  },
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(Navigation, null),
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            'h1',
+	            null,
+	            'Polls'
+	          ),
+	          React.createElement(
+	            Row,
+	            null,
+	            React.createElement(
+	              Button,
+	              { onClick: this.goAddPoll },
+	              'Add Poll'
+	            )
+	          ),
+	          React.createElement('br', null),
+	          React.createElement('br', null),
+	          React.createElement(PollList, { data: this.state.data, foodie_id: this.state.foodie.id })
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var PollList = React.createClass({
+	  displayName: 'PollList',
+
+	  render: function () {
+	    var PollNodes = this.props.data.map(function (poll) {
+	      return React.createElement(
+	        Poll,
+	        { poll_id: poll.id, creator_name: poll.creator, foodie_id: this.props.foodie_id, title: poll.title, choices: poll.Restaurants, added: poll.added },
+	        poll.description
+	      );
+	    }, this);
+	    return React.createElement(
+	      'div',
+	      { className: 'PollList' },
+	      PollNodes
+	    );
+	  }
+	});
+
+	module.exports = PollPage;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 491 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var Router = __webpack_require__(159);
+	var CmsHeader = __webpack_require__(225);
+
+	var Navigation = React.createClass({
+	  displayName: 'Navigation',
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'App' },
+	      React.createElement(CmsHeader, null)
+	    );
+	  }
+	});
+
+	var Choice = React.createClass({
+	  displayName: 'Choice',
+
+	  handleChoice: function (e) {
+	    console.log("picking choice");
+	    console.log(e.currentTarget.value);
+	    this.props.updateChoice(e.currentTarget.value);
+	  },
+	  MoveToProfile: function (event) {
+	    console.log("move calls");
+	    console.log(String(this.props.restaurant_id));
+	    this.props.handleMoveToProfile(String(this.props.restaurant_id));
+	  },
+	  getInitialState: function () {
+	    return { data: '', restaurant: [], selectedChoice: [] };
+	  },
+	  componentDidMount: function () {
+	    this.loadRestaurantFromServer();
+	  },
+	  loadRestaurantFromServer: function () {
+	    var restaurants_url = "/api/restaurants/" + String(this.props.restaurant_id) + '/';
+	    $.ajax({
+	      method: 'GET',
+	      url: restaurants_url,
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        this.setState({ data: data });
+	        this.setState({ restaurant: data.restaurant });
+	        console.log(data);
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error("failed to load restaurant");
+	      }.bind(this)
+	    });
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'restaurant text-align-center' },
+	      React.createElement(
+	        Col,
+	        { xs: 3, md: 3 },
+	        React.createElement(
+	          'a',
+	          null,
+	          React.createElement(
+	            'h2',
+	            { className: 'restaurantName', onClick: this.MoveToProfile, value: this.props.restaurant_id },
+	            this.state.restaurant.name
+	          )
+	        ),
+	        React.createElement(
+	          'p',
+	          null,
+	          'Review average: ',
+	          this.state.data.average_score,
+	          '/10',
+	          React.createElement('br', null),
+	          this.state.restaurant.description
+	        ),
+	        React.createElement('input', { onChange: this.handleChoice, type: 'radio', name: this.props.poll_id, ref: this.props.restaurant_id, value: this.props.restaurant_id })
+	      )
+	    );
+	  }
+	});
+
+	var Poll = React.createClass({
+	  displayName: 'Poll',
+
+	  updateSelectedChoice: function (choice) {
+	    this.setState({ selected_choice: choice }, function () {
+	      console.log("poll choice picked");
+	      console.log(this.state.selected_choice);
+	    });
+	  },
+	  loadCreator: function () {
+	    $.ajax({
+	      method: 'Get',
+	      url: "/api/foodies/" + this.props.creator_name + "/",
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("creator loaded");
+	        console.log(data);
+	        this.setState({ creator_username: data.user.username });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  loadVoteCounts: function () {
+	    $.ajax({
+	      method: 'Get',
+	      url: "/api/polls/" + this.props.poll_id + "/",
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("vote counts loaded");
+	        console.log(data.vote_counts);
+	        this.setState({ vote_counts: data.vote_counts });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return { creator_username: '', selected_choice: '', vote_counts: [], vote_check: [] };
+	  },
+	  componentDidMount: function () {
+	    this.loadCreator();
+	    this.loadVoteCounts();
+	  },
+	  submitVote: function () {
+	    console.log("submitting vote");
+	    var vote_url = "/api/votes/";
+	    var foodie_id = this.props.foodie_id;
+	    var choice = this.state.selected_choice;
+	    var poll_id = this.props.poll_id;
+	    vote_url = vote_url + "?foodie=" + String(foodie_id) + "&poll=" + String(poll_id);
+
+	    $.ajax({
+	      url: vote_url,
+	      contentType: 'application/json; charset=utf-8',
+	      dataType: 'json',
+	      type: 'GET',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (vote_check) {
+	        console.log("check vote state-0");
+	        console.log(vote_url);
+	        console.log("check vote state-1");
+	        this.setState({ vote_check: vote_check }, function () {
+	          if (vote_check.length == 0) {
+	            data = { foodie_pk: foodie_id, choice: choice, poll: poll_id };
+	            console.log("posting vote");
+	            console.log(JSON.stringify(data));
+	            $.ajax({
+	              url: "/api/votes/",
+	              contentType: 'application/json; charset=utf-8',
+	              dataType: 'json',
+	              type: 'POST',
+	              data: JSON.stringify(data),
+	              headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	              },
+	              success: function (data) {
+	                this.loadVoteCounts();
+	              }.bind(this),
+	              error: function (xhr, status, err) {
+	                console.log("vote failed");
+	                console.error(this.props.url, status, err.toString());
+	              }.bind(this)
+	            });
+	          } else {
+	            console.log(vote_check);
+	            data = { foodie_pk: foodie_id, choice: choice, poll: poll_id };
+	            $.ajax({
+	              url: "/api/votes/" + String(this.state.vote_check[0].id) + "/",
+	              contentType: 'application/json; charset=utf-8',
+	              dataType: 'json',
+	              type: 'PUT',
+	              data: JSON.stringify(data),
+	              headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	              },
+	              success: function (data) {
+	                console.log("vote created");
+	                this.loadVoteCounts();
+	              }.bind(this),
+	              error: function (xhr, status, err) {
+	                console.log("vote failed");
+	                console.error(this.props.url, status, err.toString());
+	              }.bind(this)
+	            });
+	          }
+	        });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("vote failed");
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  goToRestaurantProfile: function (restaurantKey) {
+	    this.context.router.push('/app/restaurant/' + String(restaurantKey));
+	  },
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  render: function () {
+	    var ChoicesNodes = this.props.choices.map(function (choice) {
+	      return React.createElement(Choice, { updateChoice: this.updateSelectedChoice, restaurant_id: choice, poll_id: this.props.poll_id, handleMoveToProfile: this.goToRestaurantProfile });
+	    }, this);
+	    var VoteCountsNodes = Object.getOwnPropertyNames(this.state.vote_counts).map(function (key) {
+	      var restaurantName = { key };
+	      var voteCount = this.state.vote_counts[key];
+	      return React.createElement(
+	        'div',
+	        null,
+	        key,
+	        ': ',
+	        voteCount
+	      );
+	    }, this);
+
+	    return React.createElement(
+	      'div',
+	      { className: 'Poll' },
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(
+	            'a',
+	            null,
+	            React.createElement(
+	              'h2',
+	              { className: 'PollName', value: this.props.url },
+	              this.props.title
+	            )
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Added on: ',
+	            this.props.added,
+	            ' By: ',
+	            this.state.creator_username,
+	            React.createElement('br', null),
+	            this.props.children
+	          ),
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Vote Count'
+	          ),
+	          React.createElement(
+	            'span',
+	            null,
+	            VoteCountsNodes
+	          ),
+	          React.createElement(
+	            Col,
+	            { xs: 12, md: 12 },
+	            ChoicesNodes
+	          )
+	        ),
+	        React.createElement(
+	          Button,
+	          { onClick: this.submitVote },
+	          'Vote'
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var PollPage = React.createClass({
+	  displayName: 'PollPage',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  goAddPoll: function () {
+	    this.context.router.push('/app/add_poll/');
+	  },
+	  loadFoodieData: function (foodie_id) {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/foodies/' + String(foodie_id) + '/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        this.setState({ foodie: res });
+	      }.bind(this)
+	    });
+	  },
+	  loadUserData: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/users/i/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        this.setState({ user: res });
+	        this.loadFoodieData(this.state.user.foodie_id);
+	      }.bind(this)
+	    });
+	  },
+	  loadPollFromServer: function () {
+	    var Polls_url = "/api/polls/" + this.state.url_param + "/";
+	    $.ajax({
+	      method: 'GET',
+	      url: Polls_url,
+	      dataType: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        this.setState({ data: [data.poll] });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("polls page mounted - loading failed");
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return {
+	      url_param: this.props.params.id,
+	      data: [],
+	      sort: [],
+	      order: [],
+	      user: [],
+	      foodie: []
+	    };
+	  },
+	  componentDidMount: function () {
+	    this.loadPollFromServer();
+	    this.loadUserData();
+	  },
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(Navigation, null),
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 12, md: 12 },
+	          React.createElement(PollList, { data: this.state.data, foodie_id: this.state.foodie.id })
+	        )
+	      )
+	    );
+	  }
+	});
+
+	var PollList = React.createClass({
+	  displayName: 'PollList',
+
+	  render: function () {
+	    var PollNodes = this.props.data.map(function (poll) {
+	      return React.createElement(
+	        Poll,
+	        { poll_id: poll.id, creator_name: poll.creator, foodie_id: this.props.foodie_id, title: poll.title, choices: poll.Restaurants, added: poll.added },
+	        poll.description
+	      );
+	    }, this);
+	    return React.createElement(
+	      'div',
+	      { className: 'PollList' },
+	      PollNodes
+	    );
+	  }
+	});
+
+	module.exports = PollPage;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ }

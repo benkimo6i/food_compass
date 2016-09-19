@@ -36,9 +36,9 @@ var Restaurant = React.createClass({
       <div className="restaurant">
         <Row className="text-align-center">
                 <Col xs={12} md={12}>
-                        <a><h2 className="restaurantName" onClick={this.MoveToProfile} value={this.props.url}>
+                        <a><h3 className="restaurantName" onClick={this.MoveToProfile} value={this.props.url}>
                           {this.props.name}
-                        </h2></a>
+                        </h3></a>
                         <p>Review average: {this.props.avg_score}/10<br/>
                         {this.props.children}</p>
                 </Col>
@@ -343,12 +343,15 @@ var PollForm = React.createClass({
                                 <Row>
                                 {choiceNodes}
                                 </Row>
+                                <RestaurantPage handleRestaurantChoice={this.updateRestaurantChoices}/>
+                                <br/>
+                                <br/>
                                 <Button type="submit">Submit</Button>
                             </FormGroup>
                           </form>
                         </Col>
                       </Row>
-                      <RestaurantPage handleRestaurantChoice={this.updateRestaurantChoices}/>
+
 
       </div>
     );
