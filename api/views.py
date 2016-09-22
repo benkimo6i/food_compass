@@ -79,11 +79,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
     filter_fields = ('subject','restaurant','foodie')
     pagination_class = LimitOffsetPagination
     ordering_fields = ('subject', 'added', 'score')
-    # permission_classes = (permissions.IsAuthenticated,)
-    #
-    # def get_permissions(self):
-    #     return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
-    #             else permissions.IsAuthenticated()),
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
 
 
 class FoodieViewSet(viewsets.ModelViewSet):

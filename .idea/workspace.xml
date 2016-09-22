@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66cb48ec-c702-4c4e-b385-e797686bb509" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/js/foodie_profile.jsx" afterPath="$PROJECT_DIR$/assets/js/foodie_profile.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/bundles/main.js" afterPath="$PROJECT_DIR$/assets/bundles/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/serializers.py" afterPath="$PROJECT_DIR$/api/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/tests.py" afterPath="$PROJECT_DIR$/api/tests.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/views.py" afterPath="$PROJECT_DIR$/api/views.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="django-react-auth.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -68,21 +63,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.577812">
+            <state vertical-scroll-proportion="-13.888889">
               <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="views.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="views.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/api/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-5.148148">
-              <caret line="82" column="4" selection-start-line="82" selection-start-column="5" selection-end-line="85" selection-end-column="54" />
+            <state vertical-scroll-proportion="0.19106318">
+              <caret line="81" column="4" selection-start-line="81" selection-start-column="4" selection-end-line="85" selection-end-column="52" />
               <folding>
                 <element signature="e#0#43#0" expanded="true" />
               </folding>
@@ -184,11 +179,11 @@
         <option value="$PROJECT_DIR$/assets/js/add_poll.jsx" />
         <option value="$PROJECT_DIR$/assets/js/pollListing.jsx" />
         <option value="$PROJECT_DIR$/assets/js/restaurantListing.jsx" />
-        <option value="$PROJECT_DIR$/api/views.py" />
         <option value="$PROJECT_DIR$/api/tests.py" />
         <option value="$PROJECT_DIR$/api/serializers.py" />
         <option value="$PROJECT_DIR$/assets/js/foodie_profile.jsx" />
         <option value="$PROJECT_DIR$/django_react_auth/settings.py" />
+        <option value="$PROJECT_DIR$/api/views.py" />
       </list>
     </option>
   </component>
@@ -898,16 +893,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/api/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-5.148148">
-          <caret line="82" column="4" selection-start-line="82" selection-start-column="5" selection-end-line="85" selection-end-column="54" />
-          <folding>
-            <element signature="e#0#43#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/assets/js/google_map.jsx">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -942,9 +927,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.577812">
+        <state vertical-scroll-proportion="-13.888889">
           <caret line="25" column="13" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/api/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19106318">
+          <caret line="81" column="4" selection-start-line="81" selection-start-column="4" selection-end-line="85" selection-end-column="52" />
+          <folding>
+            <element signature="e#0#43#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
