@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66cb48ec-c702-4c4e-b385-e797686bb509" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/js/pollListing.jsx" afterPath="$PROJECT_DIR$/assets/js/pollListing.jsx" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/bundles/main.js" afterPath="$PROJECT_DIR$/assets/bundles/main.js" />
     </list>
     <ignored path="django-react-auth.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,8 +36,8 @@
       <file leaf-file-name="pollListing.jsx" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/assets/js/pollListing.jsx">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-12.222222">
-              <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
+            <state vertical-scroll-proportion="-7.4444447">
+              <caret line="206" column="4" selection-start-line="206" selection-start-column="4" selection-end-line="206" selection-end-column="4" />
               <folding />
             </state>
           </provider>
@@ -929,8 +929,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/assets/js/pollListing.jsx">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-12.222222">
-          <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
+        <state vertical-scroll-proportion="-7.4444447">
+          <caret line="206" column="4" selection-start-line="206" selection-start-column="4" selection-end-line="206" selection-end-column="4" />
           <folding />
         </state>
       </provider>

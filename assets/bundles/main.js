@@ -57432,6 +57432,9 @@
 	  MoveToProfile: function (event) {
 	    this.context.router.push('/app/polls/' + String(this.props.poll_id) + "/");
 	  },
+	  goToRestaurantProfile: function (restaurantKey) {
+	    this.context.router.push('/app/restaurant/' + String(restaurantKey));
+	  },
 	  contextTypes: {
 	    router: React.PropTypes.object.isRequired
 	  },
