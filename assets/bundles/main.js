@@ -57083,7 +57083,7 @@
 	        console.log("loading user");
 	        console.log(user_res);
 	        console.log("loading user loaded");
-	        this.setState({ can_edit: user_res.is_staff });
+	        this.setState({ can_edit: true });
 	      }.bind(this)
 	    });
 	  },

@@ -46,9 +46,9 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     ordering_fields = ('added', 'avg_review')
     permission_classes = (permissions.IsAuthenticated,)
 
-    def get_permissions(self):
-        return (IsAdminUser() if self.request.method not in permissions.SAFE_METHODS
-                else permissions.IsAuthenticated()),
+    # def get_permissions(self):
+    #     return (IsAdminUser() if self.request.method not in permissions.SAFE_METHODS
+    #             else permissions.IsAuthenticated()),
 
     def get_queryset(self):
         return Restaurant.objects.annotate(
