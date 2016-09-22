@@ -132,12 +132,19 @@ var Review = React.createClass({
 });
 
 var Review = React.createClass({
+  contextTypes: {
+        router: React.PropTypes.object.isRequired
+  },
+  goToRestaurantProfile: function() {
+        this.context.router.push('/app/restaurant/'+String(this.props.restaurant_id));
+  },
   render: function() {
     return (
       <div className="Review">
-        <h2 className="ReviewAuthor">
+        <h3><a onClick={this.goToRestaurantProfile}>{this.props.restaurant_name}</a></h3>
+        <h4 className="ReviewAuthor">
           {this.props.subject}
-        </h2>
+        </h4>
         <span><em>By: {this.props.foodie_name}</em> on {this.props.added_on}</span><br/>
         <span>score: {this.props.score}/10</span>
         <span><p>{this.props.children}</p></span>
@@ -220,7 +227,7 @@ var ReviewList = React.createClass({
   render: function() {
     var reviewNodes = this.props.data.map(function(review) {
       return (
-        <Review subject={review.subject} key={review.id} url={review.url} score={review.score} foodie_name={review.foodie.user.username} added_on={review.added}>
+        <Review restaurant_id={review.restaurant} restaurant_name={review.restaurant_name} subject={review.subject} key={review.id} url={review.url} score={review.score} foodie_name={review.foodie.user.username} added_on={review.added}>
           {review.comment}
         </Review>
       );

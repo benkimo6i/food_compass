@@ -195,9 +195,12 @@ class FoodieSerializer(serializers.HyperlinkedModelSerializer):
 class ReviewSerializer(serializers.ModelSerializer):
     foodie = FoodieSerializer('foodie', read_only=True)
     foodie_pk = serializers.IntegerField(write_only=True)
+    restaurant_name = serializers.ReadOnlyField(source="restaurant.name")
+    #restaurant = serializers.SlugRelatedField(slug_field='name', queryset=Restaurant.objects.all())
+    #restaurant = serializers.StringRelatedField()
     class Meta:
         model = Review
-        fields = ('id','url','foodie','foodie_pk', 'subject','restaurant','wouldGo','score','comment','added')
+        fields = ('id','url','foodie','foodie_pk','restaurant_name', 'subject','restaurant','wouldGo','score','comment','added')
         read_only_fields = ('id','url','added')
 
     def create(self, validated_data):

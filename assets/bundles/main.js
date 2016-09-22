@@ -56510,12 +56510,27 @@
 	var Review = React.createClass({
 	  displayName: 'Review',
 
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  goToRestaurantProfile: function () {
+	    this.context.router.push('/app/restaurant/' + String(this.props.restaurant_id));
+	  },
 	  render: function () {
 	    return React.createElement(
 	      'div',
 	      { className: 'Review' },
 	      React.createElement(
-	        'h2',
+	        'h3',
+	        null,
+	        React.createElement(
+	          'a',
+	          { onClick: this.goToRestaurantProfile },
+	          this.props.restaurant_name
+	        )
+	      ),
+	      React.createElement(
+	        'h4',
 	        { className: 'ReviewAuthor' },
 	        this.props.subject
 	      ),
@@ -56654,7 +56669,7 @@
 	    var reviewNodes = this.props.data.map(function (review) {
 	      return React.createElement(
 	        Review,
-	        { subject: review.subject, key: review.id, url: review.url, score: review.score, foodie_name: review.foodie.user.username, added_on: review.added },
+	        { restaurant_id: review.restaurant, restaurant_name: review.restaurant_name, subject: review.subject, key: review.id, url: review.url, score: review.score, foodie_name: review.foodie.user.username, added_on: review.added },
 	        review.comment
 	      );
 	    }, this);

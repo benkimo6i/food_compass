@@ -25,21 +25,38 @@ class UserTests(TestCase):
 
 class RestaurantNonAdminTests(TestCase):
         """
-        Ensure non-admin cannot create a new Restaurant object.
+        Ensure user can create a new Restaurant object.
         """
         def setUp(self):
             self.user = User.objects.create(username= 'test_user', email='test@test.com', password='123qazwsx')
             self.token = Token.objects.get(user=self.user).key
             self.c = Client()
 
-        #non-admin should 403.
         def test_create_restaurant(self):
             header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token)}
             data =  {"name": "test_restaurant","description": "test test","street": "147-45 84th ave","city": "briarwood","state": "NY"}
             response = self.client.post('/api/restaurants/', data, format='json', **header)
-            self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, "REST token-auth failed - "+str(response.status_code))
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED, "REST token-auth failed - "+str(response.status_code))
             self.assertEqual(User.objects.count(), 1)
             self.assertEqual(User.objects.get().username, 'test_user')
+
+# class RestaurantNonAdminTests(TestCase):
+#         """
+#         Ensure non-admin cannot create a new Restaurant object.
+#         """
+#         def setUp(self):
+#             self.user = User.objects.create(username= 'test_user', email='test@test.com', password='123qazwsx')
+#             self.token = Token.objects.get(user=self.user).key
+#             self.c = Client()
+#
+#         #non-admin should 403.
+#         def test_create_restaurant(self):
+#             header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token)}
+#             data =  {"name": "test_restaurant","description": "test test","street": "147-45 84th ave","city": "briarwood","state": "NY"}
+#             response = self.client.post('/api/restaurants/', data, format='json', **header)
+#             self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN, "REST token-auth failed - "+str(response.status_code))
+#             self.assertEqual(User.objects.count(), 1)
+#             self.assertEqual(User.objects.get().username, 'test_user')
 
 # class RestaurantAdminTests(TestCase):
 #         """
