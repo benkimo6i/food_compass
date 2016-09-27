@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken.views import obtain_auth_token
 
-from .views import UserViewSet, RestaurantViewSet, ReviewViewSet, FoodieViewSet, PollViewSet, VoteViewSet, ProfileImageViewSet
+from .views import CircleViewSet, UserViewSet, RestaurantViewSet, ReviewViewSet, FoodieViewSet, PollViewSet, VoteViewSet, ProfileImageViewSet, CircleMembershipViewSet
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet)
@@ -14,6 +14,8 @@ router.register(r'foodies', FoodieViewSet)
 router.register(r'polls', PollViewSet)
 router.register(r'votes', VoteViewSet)
 router.register(r'upload_image',ProfileImageViewSet)
+router.register(r'circles',CircleViewSet)
+router.register(r'circle_memberships',CircleMembershipViewSet)
 
 
 urlpatterns = router.urls

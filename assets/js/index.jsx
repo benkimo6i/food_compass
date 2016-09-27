@@ -13,6 +13,8 @@ var editProfile = require('./edit_foodie_profile')
 var restaurantList = require('./restaurantListing')
 var pollList = require('./pollListing')
 var Poll = require('./poll_detail')
+var AddCircle = require('./add_circle')
+var CircleProfile = require('./circle_profile')
 
 
 
@@ -42,6 +44,8 @@ ReactDOM.render(
                     <Router.Route path='/app/restaurant/' component={restaurantList} />
                     <Router.Route path='/app/polls/' component={pollList} />
                     <Router.Route path='/app/polls/:id' component={Poll} />
+                    <Router.Route path='/app/add_circle/' component={AddCircle} />
+                    <Router.Route path='/app/circles/:id' component={CircleProfile} />
 
                 </Router.Route>
             </Router.Route>

@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
 from rest_framework.test import APITestCase
-from api.models import Foodie,Restaurant, Poll, Vote, ProfileImage
+from api.models import Foodie,Restaurant, Poll, Vote, ProfileImage, Circle, CircleMembership
 from django.core.urlresolvers import reverse
 from urlparse import urlparse
 from django.conf import settings
@@ -22,6 +22,41 @@ class UserTests(TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(User.objects.count(), 1)
         self.assertEqual(User.objects.get().username, 'test_user')
+
+class CircleTests(TestCase):
+    def setUp(self):
+            self.user = User.objects.create(username= 'test_user', email='test@test.com', password='123qazwsx')
+            self.token = Token.objects.get(user=self.user).key
+            self.c = Client()
+            self.other_foodie = User.objects.create(username= 'other_foodie', email='other_foodie@test.com', password='123qazwsx')
+
+    def test_create_circle_with_no_foodies_or_admins(self):
+            header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token)}
+            data =  {"name": "test","description": "test test test","street": "147-45 84th ave","city": "briarwood","state": "NY"}
+            response = self.client.post('/api/circles/', data, format='json', **header)
+            print response
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED, "REST token-auth failed - "+str(response.status_code))
+            self.assertEqual(Circle.objects.count(), 1)
+            self.assertEqual(Circle.objects.get().name, 'test')
+            self.assertEqual(Circle.objects.get().master, self.user.foodie)
+
+    def test_create_circle(self):
+            header = {'HTTP_AUTHORIZATION': 'Token {}'.format(self.token)}
+            data =  {"name": "test","description": "test test test","street": "147-45 84th ave","city": "briarwood","state": "NY"}
+            response = self.client.post('/api/circles/', data, format='json', **header)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED, "REST token-auth failed - "+str(response.status_code))
+            self.assertEqual(Circle.objects.count(), 1)
+            self.assertEqual(Circle.objects.get().name, 'test')
+            self.assertEqual(Circle.objects.get().master, self.user.foodie)
+
+            data =  {"foodie": 1,"circle": 1}
+            response = self.client.post('/api/circle_memberships/', data, format='json', **header)
+            self.assertEqual(response.status_code, status.HTTP_201_CREATED, "REST token-auth failed - "+str(response.status_code))
+            self.assertEqual(CircleMembership.objects.count(), 1)
+            self.assertEqual(CircleMembership.objects.get().foodie, self.user.foodie)
+            self.assertEqual(CircleMembership.objects.get().circle, Circle.objects.get())
+
+
 
 class RestaurantNonAdminTests(TestCase):
         """

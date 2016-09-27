@@ -1,21 +1,17 @@
 from django.contrib.auth.models import User
+from .models import Restaurant, Review, Foodie, Poll, Vote, ProfileImage, Circle,CircleMembership
+
 from rest_framework import viewsets, response, permissions
-from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer, ProfileImageUploadSerializer
-from rest_framework.permissions import AllowAny, IsAdminUser
+from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer, ProfileImageUploadSerializer, CircleSerializer, CircleMembershipSerializer
+
 from .permissions import IsStaffOrTargetUser, IsOwnerOrStaffElseReadonly_Vote, IsPollOwnerOrStaffElseReadonly_Vote, IsImageOwnerOrStaffElseReadonly
+from rest_framework.permissions import AllowAny
+
 from rest_framework import filters
-from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
-import tempfile
-from io import BufferedWriter
-
-from .models import Restaurant, Review, Foodie, Poll, Vote, ProfileImage
-
 from rest_framework.pagination import LimitOffsetPagination
-
 from django.db.models import Avg, Count
 
-import datetime
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -26,6 +22,18 @@ class UserViewSet(viewsets.ModelViewSet):
         # allow non-authenticated user to create via POST
         return (AllowAny() if self.request.method == 'POST'
                 else IsStaffOrTargetUser()),
+
+    def list(self, request, *args, **kwargs):
+        if request.method == 'GET' and 'username' in request.GET:
+            print("filtering on username test")
+            username = request.GET.get('username')
+            if username is not None and username != '':
+                queryset = User.objects.filter(username__startswith=(username))
+                serializer = UserSerializer(queryset, many=True)
+                return response.Response(serializer.data)
+        else:
+            return super(UserViewSet, self).list(request)
+
 
     def retrieve(self, request, pk=None):
         if pk == 'i':
@@ -45,10 +53,6 @@ class RestaurantViewSet(viewsets.ModelViewSet):
     pagination_class = LimitOffsetPagination
     ordering_fields = ('added', 'avg_review')
     permission_classes = (permissions.IsAuthenticated,)
-
-    # def get_permissions(self):
-    #     return (IsAdminUser() if self.request.method not in permissions.SAFE_METHODS
-    #             else permissions.IsAuthenticated()),
 
     def get_queryset(self):
         return Restaurant.objects.annotate(
@@ -95,6 +99,7 @@ class FoodieViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return (IsStaffOrTargetUser() if self.request.method not in permissions.SAFE_METHODS
                 else permissions.IsAuthenticated()),
+
 
 class ProfileImageViewSet(viewsets.ModelViewSet):
     queryset = ProfileImage.objects.all()
@@ -153,6 +158,39 @@ class VoteViewSet(viewsets.ModelViewSet):
     def get_permissions(self):
         return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
                 else permissions.IsAuthenticated()),
+
+class CircleViewSet(viewsets.ModelViewSet):
+    queryset = Circle.objects.all()
+    serializer_class = CircleSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
+
+class CircleMembershipViewSet(viewsets.ModelViewSet):
+    queryset = CircleMembership.objects.all()
+    serializer_class = CircleMembershipSerializer
+    filter_backends = (filters.DjangoFilterBackend,)
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
+
+    def list(self, request, *args, **kwargs):
+        if request.method == 'GET' and 'circle_id' in request.GET:
+            print("filtering on circle test")
+            circle_id = request.GET.get('circle_id')
+            circle = Circle.objects.filter(id=circle_id)
+            if circle is not None and circle != '':
+                queryset = CircleMembership.objects.filter(circle=circle)
+                serializer = CircleMembershipSerializer(queryset, many=True, context={'request':request})
+                return response.Response(serializer.data)
+
+        else:
+            return super(CircleMembershipViewSet, self).list(request)
 
 
 

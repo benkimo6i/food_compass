@@ -2,7 +2,9 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Restaurant, Review,Foodie, Poll, Vote, ProfileImage
+from .models import Restaurant, Review,Foodie, Poll, Vote, ProfileImage, Circle, CircleMembership
+
+from rest_framework.fields import CurrentUserDefault
 
 import googlemaps
 
@@ -13,6 +15,7 @@ class UserSerializer(serializers.ModelSerializer):
     new_pass = serializers.CharField(allow_blank=True, write_only=True)
     new_confirm_pass = serializers.CharField(allow_blank=True, write_only=True)
     foodie_id = serializers.URLField(source='foodie.id', allow_blank=True, read_only=True)
+
     class Meta:
         model = User
         fields = ('id', 'username', 'password', 'email','is_staff','confirm_pass','foodie_id', 'new_pass', 'new_confirm_pass')
@@ -275,3 +278,60 @@ class VoteSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+
+class CircleSerializer(serializers.ModelSerializer):
+    lat = None
+    log = None
+    master = FoodieSerializer(read_only=True)
+    # foodies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
+    class Meta:
+        model = Circle
+        fields = ('name','description','street','city','state','master', 'lat','log')
+        read_only_fields = ('id','url','added', 'master', 'lat','log')
+
+    def create(self, validated_data):
+        master = self.context['request'].user.foodie
+        circle = Circle.objects.create(
+            name = validated_data['name'],
+            description = validated_data['description'],
+            street = validated_data['street'],
+            city = validated_data['city'],
+            state = validated_data['state'],
+            lat= self.lat,
+            log=self.log,
+            master = master
+        )
+        circle.save()
+        return circle
+
+    def validate(self, data):
+        """
+        Check that the start is before the stop.
+        """
+        gmaps = googlemaps.Client(key='AIzaSyBY34yk3QSyUtWPfIgBw3mFVVV2XSp6SQw')
+        try:
+            address = str(data['street'].encode('ascii','ignore')) +  str(data['city'].encode('ascii','ignore')) +  str(data['state'].encode('ascii','ignore'))
+        except:
+            address = data['street']
+        # Geocoding an address
+        if not isinstance(address, str):
+            geocode_result = gmaps.geocode(address.encode('ascii','ignore'))
+        else:
+            geocode_result = gmaps.geocode(address)
+
+        if not geocode_result:
+            raise serializers.ValidationError("invalid address & location not found")
+        else:
+            result = geocode_result[0]
+            self.log = result['geometry']['location']['lng']
+            self.lat = result['geometry']['location']['lat']
+        return data
+
+class CircleMembershipSerializer(serializers.ModelSerializer):
+    circle_name = serializers.ReadOnlyField(source="circle.name")
+    foodie_info = FoodieSerializer(source="foodie",read_only=True)
+    class Meta:
+        model = CircleMembership
+        fields = ('foodie','circle','circle_name','foodie_info')
+        read_only_fields = ('id','url', 'added')

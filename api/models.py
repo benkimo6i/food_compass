@@ -65,7 +65,6 @@ class Review(models.Model):
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
-
 def foodie_saved_receiver(sender, instance, created, *args, **kwargs):
     user = instance
     foodie = Foodie.objects.filter(user = user)
@@ -85,6 +84,7 @@ class Poll(models.Model):
     status = models.CharField(max_length=120, choices=POLLS_STATUS_CHOICES, default='open')
     Restaurants = models.ManyToManyField(Restaurant)
 
+
     def __unicode__(self):
         return self.title
 
@@ -93,3 +93,26 @@ class Vote(models.Model):
     foodie = models.ForeignKey(Foodie)
     poll = models.ForeignKey(Poll)
     choice = models.ForeignKey(Restaurant)
+
+class Circle(models.Model):
+    name = models.CharField(max_length=140, null=False)
+    description = models.CharField(max_length=140, null=True)
+    street = models.CharField(max_length=120)
+    city = models.CharField(max_length=120)
+    state = models.CharField(max_length=120)
+    lat = models.DecimalField(max_digits=12,decimal_places=10)
+    log = models.DecimalField(max_digits=12,decimal_places=10)
+    added = models.DateTimeField(auto_now_add=True)
+    master = models.ForeignKey(Foodie, null=True, related_name='circle_masters')
+
+
+    def __unicode__(self):
+        return self.name
+
+class CircleMembership(models.Model):
+    foodie = models.ForeignKey(Foodie)
+    circle = models.ForeignKey(Circle)
+    added = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return self.circle+" - "+self.foodie

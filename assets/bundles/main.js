@@ -59,6 +59,8 @@
 	var restaurantList = __webpack_require__(489);
 	var pollList = __webpack_require__(490);
 	var Poll = __webpack_require__(491);
+	var AddCircle = __webpack_require__(492);
+	var CircleProfile = __webpack_require__(493);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -89,7 +91,9 @@
 	            React.createElement(Router.Route, { path: '/app/test/', component: Test }),
 	            React.createElement(Router.Route, { path: '/app/restaurant/', component: restaurantList }),
 	            React.createElement(Router.Route, { path: '/app/polls/', component: pollList }),
-	            React.createElement(Router.Route, { path: '/app/polls/:id', component: Poll })
+	            React.createElement(Router.Route, { path: '/app/polls/:id', component: Poll }),
+	            React.createElement(Router.Route, { path: '/app/add_circle/', component: AddCircle }),
+	            React.createElement(Router.Route, { path: '/app/circles/:id', component: CircleProfile })
 	        )
 	    )
 	), document.getElementById('app'));
@@ -58049,6 +58053,302 @@
 	});
 
 	module.exports = PollPage;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 492 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var CmsHeader = __webpack_require__(225);
+	var FormGroup = ReactBootstrap.FormGroup;
+	var FormControl = ReactBootstrap.FormControl;
+
+	var Navigation = React.createClass({
+	  displayName: 'Navigation',
+
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      { className: 'App' },
+	      React.createElement(CmsHeader, null)
+	    );
+	  }
+	});
+
+	var CircleForm = React.createClass({
+	  displayName: 'CircleForm',
+
+	  contextTypes: {
+	    router: React.PropTypes.object.isRequired
+	  },
+	  handleCircleSubmit: function (Circle) {
+	    $.ajax({
+	      url: '/api/circles/',
+	      dataType: 'json',
+	      type: 'POST',
+	      data: Circle,
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("circle submitted");
+	        this.context.router.replace('/app/');
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        this.setState({ data: comments });
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  getInitialState: function () {
+	    return { name: '', description: '', street: '', city: '', state: '' };
+	  },
+	  handleNameChange: function (e) {
+	    this.setState({ name: e.target.value });
+	  },
+	  handleDescriptionChange: function (e) {
+	    this.setState({ description: e.target.value });
+	  },
+	  handleStreetChange: function (e) {
+	    this.setState({ street: e.target.value });
+	  },
+	  handleCityChange: function (e) {
+	    this.setState({ city: e.target.value });
+	  },
+	  handleStateChange: function (e) {
+	    this.setState({ state: e.target.value });
+	  },
+	  handleSubmit: function (e) {
+	    e.preventDefault();
+	    var name = this.state.name.trim();
+	    var description = this.state.description.trim();
+	    var street = this.state.street.trim();
+	    var city = this.state.city.trim();
+	    var state = this.state.state.trim();
+	    if (!name || !description || !street || !city || !state) {
+	      return;
+	    }
+	    this.handleCircleSubmit({ name: name, description: description, street: street, city: city, state: state });
+	  },
+	  render: function () {
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(Navigation, null),
+	      React.createElement(
+	        Row,
+	        { className: 'sign-up-label text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          React.createElement(
+	            'h1',
+	            null,
+	            'Add Circle'
+	          ),
+	          React.createElement('br', null)
+	        )
+	      ),
+	      React.createElement(
+	        Row,
+	        { className: 'text-align-center' },
+	        React.createElement(
+	          Col,
+	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          React.createElement(
+	            'form',
+	            { className: 'commentForm', onSubmit: this.handleSubmit },
+	            React.createElement(
+	              FormGroup,
+	              null,
+	              React.createElement(FormControl, {
+	                type: 'text',
+	                placeholder: 'Name',
+	                value: this.state.name,
+	                onChange: this.handleNameChange
+	              }),
+	              React.createElement('br', null),
+	              React.createElement(FormControl, {
+	                type: 'text',
+	                placeholder: 'Description',
+	                value: this.state.description,
+	                onChange: this.handleDescriptionChange
+	              }),
+	              React.createElement('br', null),
+	              React.createElement(FormControl, {
+	                type: 'text',
+	                placeholder: 'street',
+	                value: this.state.street,
+	                onChange: this.handleStreetChange
+	              }),
+	              React.createElement('br', null),
+	              React.createElement(FormControl, {
+	                type: 'text',
+	                placeholder: 'City',
+	                value: this.state.city,
+	                onChange: this.handleCityChange
+	              }),
+	              React.createElement('br', null),
+	              React.createElement(FormControl, {
+	                type: 'text',
+	                placeholder: 'State',
+	                value: this.state.state,
+	                onChange: this.handleStateChange
+	              }),
+	              React.createElement('br', null),
+	              React.createElement(
+	                Button,
+	                { type: 'submit' },
+	                'Submit'
+	              )
+	            )
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = CircleForm;
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
+
+/***/ },
+/* 493 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
+	var auth = __webpack_require__(224);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Router = __webpack_require__(159);
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var FormGroup = ReactBootstrap.FormGroup;
+	var FormControl = ReactBootstrap.FormControl;
+	var ReactDOM = __webpack_require__(158);
+	var CmsHeader = __webpack_require__(225);
+	var ControlLabel = ReactBootstrap.ControlLabel;
+	var Checkbox = ReactBootstrap.Checkbox;
+	var googleMap = __webpack_require__(486);
+
+	var Navigation = React.createClass({
+	    displayName: 'Navigation',
+
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'App' },
+	            React.createElement(CmsHeader, null)
+	        );
+	    }
+	});
+
+	var CircleProfile = React.createClass({
+	    displayName: 'CircleProfile',
+
+	    initTripMap: function (lat, lng) {
+	        var geocoder = new google.maps.Geocoder();
+	        var latlng = new google.maps.LatLng(lat, lng);
+	        var isDraggable = $(document).width() > 480 ? true : false; // If document (your website) is wider than 480px, isDraggable = true, else isDraggable = false
+
+	        var mapOptions = {
+	            zoom: 15,
+	            center: latlng
+	        };
+	        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+	        var marker = new google.maps.Marker({
+	            position: latlng,
+	            map: map
+	        });
+	    },
+	    loadCirclesFromServer: function () {
+	        $.ajax({
+	            method: 'GET',
+	            url: '/api/circles/' + this.state.url_param + '/',
+	            dataType: 'json',
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (data) {
+	                this.setState({ data: data });
+	                console.log(data);
+	                this.initTripMap(parseFloat(data.lat), parseFloat(data.log));
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error("failed to load Circle");
+	            }.bind(this)
+	        });
+	    },
+	    getInitialState: function () {
+	        return {
+	            url_param: this.props.params.id,
+	            data: []
+	        };
+	    },
+	    componentDidMount: function () {
+	        this.loadCirclesFromServer();
+	    },
+
+	    render() {
+	        return React.createElement(
+	            'div',
+	            null,
+	            React.createElement(Navigation, null),
+	            React.createElement(
+	                Row,
+	                { className: 'sign-up-label text-align-center' },
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'h1',
+	                        null,
+	                        this.state.data.name
+	                    ),
+	                    React.createElement('br', null)
+	                )
+	            ),
+	            React.createElement(
+	                Row,
+	                { className: 'text-align-center' },
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'span',
+	                        null,
+	                        this.state.data.description
+	                    )
+	                )
+	            ),
+	            React.createElement(
+	                Row,
+	                null,
+	                React.createElement(
+	                    Col,
+	                    { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	                    React.createElement(
+	                        'div',
+	                        { className: 'mapContainer' },
+	                        React.createElement('div', { id: 'map', className: 'map' })
+	                    )
+	                )
+	            )
+	        );
+	    }
+	});
+
+	module.exports = CircleProfile;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ }
