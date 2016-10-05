@@ -2,28 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="66cb48ec-c702-4c4e-b385-e797686bb509" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/js/add_circle_member.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/js/circle_page.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/js/edit_circle.jsx" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/assets/js/modal_test.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/add_poll.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/add_poll.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/css/app.css" afterPath="$PROJECT_DIR$/assets/css/app.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/css/app.css" afterPath="$PROJECT_DIR$/staticfiles/css/app.css" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/js/circle_profile.jsx" afterPath="$PROJECT_DIR$/assets/js/circle_profile.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/foodie_profile.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/foodie_profile.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/google_map.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/google_map.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/js/index.jsx" afterPath="$PROJECT_DIR$/assets/js/index.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/index.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/index.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/assets/bundles/main.js" afterPath="$PROJECT_DIR$/assets/bundles/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/bundles/main.js" afterPath="$PROJECT_DIR$/staticfiles/bundles/main.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/models.py" afterPath="$PROJECT_DIR$/api/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/navbar.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/navbar.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/polls.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/polls.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/staticfiles/js/restaurant_profile.jsx" afterPath="$PROJECT_DIR$/staticfiles/js/restaurant_profile.jsx" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/serializers.py" afterPath="$PROJECT_DIR$/api/serializers.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/django_react_auth/settings.py" afterPath="$PROJECT_DIR$/django_react_auth/settings.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/urls.py" afterPath="$PROJECT_DIR$/api/urls.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/api/views.py" afterPath="$PROJECT_DIR$/api/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="django-react-auth.iws" />
@@ -45,10 +24,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="settings.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="settings.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.47919875">
+            <state vertical-scroll-proportion="11.518518">
               <caret line="133" column="0" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
               <folding />
             </state>
@@ -75,11 +54,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="false">
+      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="-0.0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.13867489">
+              <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -151,7 +130,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/templates/nav.html" />
         <option value="$PROJECT_DIR$/assets/js/test.jsx" />
         <option value="$PROJECT_DIR$/staticfiles/admin/css/base.css" />
         <option value="$PROJECT_DIR$/api/permisssions.py" />
@@ -202,6 +180,7 @@
         <option value="$PROJECT_DIR$/assets/js/modal_test.jsx" />
         <option value="$PROJECT_DIR$/django_react_auth/config_keys.py" />
         <option value="$PROJECT_DIR$/django_react_auth/settings.py" />
+        <option value="$PROJECT_DIR$/.gitignore" />
       </list>
     </option>
   </component>
@@ -849,18 +828,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="11.518518">
+          <caret line="133" column="0" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/django_react_auth/settings.py">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="-0.47919875">
-          <caret line="133" column="0" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.13867489">
+          <caret line="6" column="12" selection-start-line="6" selection-start-column="12" selection-end-line="6" selection-end-column="12" />
           <folding />
         </state>
       </provider>

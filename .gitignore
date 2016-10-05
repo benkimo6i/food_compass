@@ -4,3 +4,4 @@ node_modules/
 
 # python virtual environment
 env/
+staticfiles/
