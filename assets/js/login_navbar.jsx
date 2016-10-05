@@ -47,7 +47,7 @@ var CmsHeader = React.createClass({
 
     render: function() {
                 const navbarInstance = (
-                  <Navbar>
+                  <Navbar staticTop>
                     <Navbar.Header>
                       <Navbar.Brand>
                         <a href="#">React-Bootstrap</a>

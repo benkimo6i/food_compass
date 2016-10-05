@@ -35496,7 +35496,7 @@
 	        if (this.state.user.is_staff) {
 	            const navbarInstance = React.createElement(
 	                Navbar,
-	                null,
+	                { staticTop: true },
 	                React.createElement(
 	                    Navbar.Header,
 	                    null,
@@ -35553,7 +35553,7 @@
 	        } else {
 	            const navbarInstance = React.createElement(
 	                Navbar,
-	                null,
+	                { staticTop: true },
 	                React.createElement(
 	                    Navbar.Header,
 	                    null,
@@ -58106,7 +58106,6 @@
 	        this.context.router.replace('/app/');
 	      }.bind(this),
 	      error: function (xhr, status, err) {
-	        this.setState({ data: comments });
 	        console.error(this.props.url, status, err.toString());
 	      }.bind(this)
 	    });
@@ -58246,6 +58245,10 @@
 	var FormControlLabel = ReactBootstrap.ControlLabel;
 	var CircleImage = ReactBootstrap.Image;
 	var ModalTest = __webpack_require__(494);
+	var ButtonGroup = ReactBootstrap.ButtonGroup;
+	var DropdownButton = ReactBootstrap.DropdownButton;
+	var MenuItem = ReactBootstrap.MenuItem;
+	var Glyphicon = ReactBootstrap.Glyphicon;
 
 	var Navigation = React.createClass({
 	  displayName: 'Navigation',
@@ -58264,6 +58267,62 @@
 
 	  contextTypes: {
 	    router: React.PropTypes.object.isRequired
+	  },
+	  loadUserData: function () {
+	    $.ajax({
+	      method: 'GET',
+	      url: '/api/users/i/',
+	      datatype: 'json',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (res) {
+	        console.log("foodie id is " + String(res.foodie_id));
+	        this.setState({ foodie_pk: res.foodie_id });
+	        this.loadCircleMembershipStatus(res.foodie_id);
+	      }.bind(this)
+	    });
+	  },
+	  joinCircle: function () {
+	    var member = { foodie: this.state.foodie_pk, circle: this.state.data.id };
+	    console.log(member);
+	    $.ajax({
+	      url: '/api/circle_memberships/',
+	      contentType: 'application/json; charset=utf-8',
+	      dataType: 'json',
+	      type: 'POST',
+	      data: JSON.stringify(member),
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("member submitted");
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("adding member error");
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
+	  },
+	  loadCircleMembershipStatus: function (foodie_id) {
+	    $.ajax({
+	      url: '/api/circle_memberships/' + '?circle=' + String(this.state.url_param) + '&foodie=' + String(foodie_id),
+	      contentType: 'application/json; charset=utf-8',
+	      dataType: 'json',
+	      type: 'GET',
+	      headers: {
+	        'Authorization': 'Token ' + localStorage.token
+	      },
+	      success: function (data) {
+	        console.log("checking membership");
+	        console.log(data);
+	        this.setState({ joined: true });
+	      }.bind(this),
+	      error: function (xhr, status, err) {
+	        console.log("checking membership error");
+	        console.error(this.props.url, status, err.toString());
+	      }.bind(this)
+	    });
 	  },
 	  updateProfileImage: function (e) {
 	    e.preventDefault();
@@ -58327,65 +58386,79 @@
 	  },
 	  getInitialState: function () {
 	    return {
+	      joined: false,
 	      url_param: this.props.params.id,
 	      circle_image: "https://cdn2.iconfinder.com/data/icons/freecns-cumulus/16/519660-164_QuestionMark-256.png",
-	      data: []
+	      data: [],
+	      foodie: [],
+	      foodie_pk: []
 	    };
 	  },
 	  componentDidMount: function () {
+	    this.loadUserData();
 	    this.loadCirclesFromServer();
 	  },
 
 	  render() {
+	    var joinButton;
+	    if (this.state.joined) {
+	      joinButton = React.createElement(
+	        Button,
+	        null,
+	        React.createElement(Glyphicon, { glyph: 'ok' }),
+	        ' Joined'
+	      );
+	    } else {
+	      joinButton = React.createElement(
+	        Button,
+	        { onClick: this.joinCircle },
+	        'Join'
+	      );
+	    }
 	    return React.createElement(
 	      'div',
 	      null,
 	      React.createElement(Navigation, null),
-	      React.createElement(ModalTest, null),
 	      React.createElement(
-	        Row,
-	        { className: 'sign-up-label text-align-center' },
+	        Col,
+	        { xs: 12, md: 3, className: 'circleProfileInfo' },
 	        React.createElement(
-	          Col,
-	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          Row,
+	          { className: 'sign-up-label text-align-center' },
 	          React.createElement(
 	            'h1',
 	            null,
 	            this.state.data.name
-	          )
-	        ),
-	        React.createElement(
-	          Col,
-	          { xs: 6, xsOffset: 3, sm: 6, smOffset: 3 },
-	          React.createElement(CircleImage, { src: this.state.circle_image, circle: true, responsive: true })
-	        )
-	      ),
-	      React.createElement('br', null),
-	      React.createElement(
-	        Row,
-	        { className: 'text-align-center' },
-	        React.createElement(
-	          Col,
-	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
+	          ),
+	          React.createElement('br', null),
+	          React.createElement(CircleImage, { src: this.state.circle_image, responsive: true }),
+	          React.createElement('br', null),
+	          joinButton,
+	          React.createElement('br', null),
+	          React.createElement('br', null),
 	          React.createElement(
 	            'span',
 	            null,
 	            this.state.data.description
+	          ),
+	          React.createElement('br', null),
+	          React.createElement('br', null),
+	          React.createElement('br', null),
+	          React.createElement(
+	            Col,
+	            { xs: 12, md: 12 },
+	            React.createElement(
+	              'div',
+	              { className: 'mapContainer' },
+	              React.createElement('div', { id: 'map', className: 'map' })
+	            )
 	          )
 	        )
 	      ),
 	      React.createElement(
-	        Row,
-	        null,
-	        React.createElement(
-	          Col,
-	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
-	          React.createElement(
-	            'div',
-	            { className: 'mapContainer' },
-	            React.createElement('div', { id: 'map', className: 'map' })
-	          )
-	        )
+	        Col,
+	        { xs: 12, md: 9 },
+	        React.createElement(ModalTest, null)
 	      )
 	    );
 	  }
@@ -58447,18 +58520,12 @@
 	      'div',
 	      null,
 	      React.createElement(
-	        'p',
-	        null,
-	        'Click to get the full Modal experience!'
-	      ),
-	      React.createElement(
 	        Button,
 	        {
-	          bsStyle: 'primary',
-	          bsSize: 'large',
+
 	          onClick: this.open
 	        },
-	        'Launch demo modal'
+	        'Invite'
 	      ),
 	      React.createElement(
 	        Modal,
@@ -58469,7 +58536,7 @@
 	          React.createElement(
 	            Modal.Title,
 	            null,
-	            'Modal heading'
+	            'Add Foodies'
 	          )
 	        ),
 	        React.createElement(
@@ -58535,41 +58602,6 @@
 	            'p',
 	            null,
 	            'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'
-	          ),
-	          React.createElement(
-	            'p',
-	            null,
-	            'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.'
 	          ),
 	          React.createElement(
 	            'p',

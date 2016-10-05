@@ -378,5 +378,5 @@ class CircleMembershipSerializer(serializers.ModelSerializer):
     foodie_info = FoodieSerializer(source="foodie",read_only=True)
     class Meta:
         model = CircleMembership
-        fields = ('foodie','circle','circle_name','foodie_info')
+        fields = ('id','foodie','circle','circle_name','foodie_info')
         read_only_fields = ('id','url', 'added')

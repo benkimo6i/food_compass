@@ -163,11 +163,11 @@ class CircleImageViewSet(viewsets.ModelViewSet):
     queryset = CircleImage.objects.all()
     serializer_class = CircleImageUploadSerializer
     parser_classes = (MultiPartParser, FormParser,)
-    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.IsAuthenticated,)
 
-    # def get_permissions(self):
-    #     return (IsImageOwnerOrStaffElseReadonly() if self.request.method not in permissions.SAFE_METHODS
-    #             else permissions.IsAuthenticated()),
+    def get_permissions(self):
+        return (IsImageOwnerOrStaffElseReadonly() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
 
 
     def perform_create(self, serializer):
@@ -189,11 +189,11 @@ class CircleViewSet(viewsets.ModelViewSet):
     queryset = Circle.objects.all()
     serializer_class = CircleSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    # permission_classes = (permissions.IsAuthenticated,)
-    #
-    # def get_permissions(self):
-    #     return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
-    #             else permissions.IsAuthenticated()),
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_permissions(self):
+        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+                else permissions.IsAuthenticated()),
     def perform_update(self, serializer):
         serializer.save()
         return response.Response(serializer.data)
@@ -202,6 +202,7 @@ class CircleMembershipViewSet(viewsets.ModelViewSet):
     queryset = CircleMembership.objects.all()
     serializer_class = CircleMembershipSerializer
     filter_backends = (filters.DjangoFilterBackend,)
+    filter_fields = ('foodie','circle')
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_permissions(self):
@@ -220,6 +221,7 @@ class CircleMembershipViewSet(viewsets.ModelViewSet):
 
         else:
             return super(CircleMembershipViewSet, self).list(request)
+
 
 
 

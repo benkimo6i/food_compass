@@ -16,6 +16,7 @@ var Checkbox = ReactBootstrap.Checkbox;
 var googleMap = require('./google_map');
 var FormControlLabel = ReactBootstrap.ControlLabel;
 var CircleImage = ReactBootstrap.Image;
+var ModalTest = require('./modal_test');
 
 var Navigation = React.createClass({
     render: function() {
@@ -108,32 +109,25 @@ var CircleProfile = React.createClass({
     return (
       <div>
         <Navigation/>
-        <Row className='sign-up-label text-align-center'>
-              <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
-                   <h1>{this.state.data.name}</h1>
-              </Col>
-
-              <Col xs={6} xsOffset={3} sm={6} smOffset={3}>
-                   <CircleImage src={this.state.circle_image} circle responsive/>
-              </Col>
-        </Row>
-        <br/>
-
-        <Row className='text-align-center'>
-              <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
-                <span>
-                    {this.state.data.description}
-                </span>
-              </Col>
-        </Row>
-        <Row>
-            <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
-                <div className ="mapContainer">
-                    <div id="map" className="map">
-                    </div>
-                </div>
+        <div className="circleProfileInfo">
+            <Col xs={12} md={3}>
+                <Row className='sign-up-label text-align-center'>
+                           <h1>{this.state.data.name}</h1>
+                           <CircleImage src={this.state.circle_image} responsive/>
+                           <ModalTest/>
+                           <span>
+                            {this.state.data.description}
+                            </span>
+                           <Col xs={12} md={12}>
+                               <div className ="mapContainer">
+                                   <div id="map" className="map">
+                                   </div>
+                               </div>
+                           </Col>
+                </Row>
             </Col>
-        </Row>
+        </div>
+
     </div>
 
     )

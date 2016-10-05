@@ -98,7 +98,7 @@ var CmsHeader = React.createClass({
     render: function() {
                 if (this.state.user.is_staff) {
                     const navbarInstance = (
-                      <Navbar>
+                      <Navbar staticTop>
                         <Navbar.Header>
                           <Navbar.Brand>
                             <a onClick={this.returnHome}>Food Compass</a>
@@ -122,7 +122,7 @@ var CmsHeader = React.createClass({
                     return navbarInstance;
                 } else {
                     const navbarInstance = (
-                      <Navbar>
+                      <Navbar staticTop>
                         <Navbar.Header>
                           <Navbar.Brand>
                             <a href="">Food Compass</a>

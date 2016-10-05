@@ -61,8 +61,8 @@
 	var Poll = __webpack_require__(491);
 	var AddCircle = __webpack_require__(492);
 	var CircleProfile = __webpack_require__(493);
-	var Circle_page = __webpack_require__(494);
-	var CircleEdit = __webpack_require__(495);
+	var Circle_page = __webpack_require__(495);
+	var CircleEdit = __webpack_require__(496);
 
 	function requireAuth(nextState, replace) {
 	    if (!auth.loggedIn()) {
@@ -58106,7 +58106,6 @@
 	        this.context.router.replace('/app/');
 	      }.bind(this),
 	      error: function (xhr, status, err) {
-	        this.setState({ data: comments });
 	        console.error(this.props.url, status, err.toString());
 	      }.bind(this)
 	    });
@@ -58245,148 +58244,137 @@
 	var googleMap = __webpack_require__(486);
 	var FormControlLabel = ReactBootstrap.ControlLabel;
 	var CircleImage = ReactBootstrap.Image;
+	var ModalTest = __webpack_require__(494);
 
 	var Navigation = React.createClass({
-	  displayName: 'Navigation',
+	    displayName: 'Navigation',
 
-	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'App' },
-	      React.createElement(CmsHeader, null)
-	    );
-	  }
+	    render: function () {
+	        return React.createElement(
+	            'div',
+	            { className: 'App' },
+	            React.createElement(CmsHeader, null)
+	        );
+	    }
 	});
 
 	var CircleProfile = React.createClass({
-	  displayName: 'CircleProfile',
+	    displayName: 'CircleProfile',
 
-	  contextTypes: {
-	    router: React.PropTypes.object.isRequired
-	  },
-	  updateProfileImage: function (e) {
-	    e.preventDefault();
-	    var imageForm = this.refs.image_form;
-	    console.log(imageForm);
-	    var formData = new FormData(imageForm);
+	    contextTypes: {
+	        router: React.PropTypes.object.isRequired
+	    },
+	    updateProfileImage: function (e) {
+	        e.preventDefault();
+	        var imageForm = this.refs.image_form;
+	        console.log(imageForm);
+	        var formData = new FormData(imageForm);
 
-	    $.ajax({
-	      url: '/api/circle_image/',
-	      contentType: false,
-	      processData: false,
-	      type: 'POST',
-	      data: formData,
-	      headers: {
-	        'Authorization': 'Token ' + localStorage.token
-	      },
-	      success: function (data) {
-	        console.log("circle image updated");
-	        this.context.router.replace('/app/circles/' + String(this.state.url_param) + '/');
-	      }.bind(this),
-	      error: function (xhr, status, err) {
-	        console.log("circle image error");
-	        console.error(this.props.url, status, err.toString());
-	      }.bind(this)
-	    });
-	  },
-	  initTripMap: function (lat, lng) {
-	    var geocoder = new google.maps.Geocoder();
-	    var latlng = new google.maps.LatLng(lat, lng);
-	    var isDraggable = $(document).width() > 480 ? true : false; // If document (your website) is wider than 480px, isDraggable = true, else isDraggable = false
+	        $.ajax({
+	            url: '/api/circle_image/',
+	            contentType: false,
+	            processData: false,
+	            type: 'POST',
+	            data: formData,
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (data) {
+	                console.log("circle image updated");
+	                this.context.router.replace('/app/circles/' + String(this.state.url_param) + '/');
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.log("circle image error");
+	                console.error(this.props.url, status, err.toString());
+	            }.bind(this)
+	        });
+	    },
+	    initTripMap: function (lat, lng) {
+	        var geocoder = new google.maps.Geocoder();
+	        var latlng = new google.maps.LatLng(lat, lng);
+	        var isDraggable = $(document).width() > 480 ? true : false; // If document (your website) is wider than 480px, isDraggable = true, else isDraggable = false
 
-	    var mapOptions = {
-	      zoom: 15,
-	      center: latlng
-	    };
-	    var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+	        var mapOptions = {
+	            zoom: 15,
+	            center: latlng
+	        };
+	        var map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
-	    var marker = new google.maps.Marker({
-	      position: latlng,
-	      map: map
-	    });
-	  },
-	  loadCirclesFromServer: function () {
-	    $.ajax({
-	      method: 'GET',
-	      url: '/api/circles/' + this.state.url_param + '/',
-	      dataType: 'json',
-	      headers: {
-	        'Authorization': 'Token ' + localStorage.token
-	      },
-	      success: function (data) {
-	        this.setState({ data: data });
-	        this.setState({ circle_image: data.circleimage_set[0].datafile });
-	        console.log(data);
-	        this.initTripMap(parseFloat(data.lat), parseFloat(data.log));
-	      }.bind(this),
-	      error: function (xhr, status, err) {
-	        console.error("failed to load Circle");
-	      }.bind(this)
-	    });
-	  },
-	  getInitialState: function () {
-	    return {
-	      url_param: this.props.params.id,
-	      circle_image: "https://cdn2.iconfinder.com/data/icons/freecns-cumulus/16/519660-164_QuestionMark-256.png",
-	      data: []
-	    };
-	  },
-	  componentDidMount: function () {
-	    this.loadCirclesFromServer();
-	  },
+	        var marker = new google.maps.Marker({
+	            position: latlng,
+	            map: map
+	        });
+	    },
+	    loadCirclesFromServer: function () {
+	        $.ajax({
+	            method: 'GET',
+	            url: '/api/circles/' + this.state.url_param + '/',
+	            dataType: 'json',
+	            headers: {
+	                'Authorization': 'Token ' + localStorage.token
+	            },
+	            success: function (data) {
+	                this.setState({ data: data });
+	                this.setState({ circle_image: data.circleimage_set[0].datafile });
+	                console.log(data);
+	                this.initTripMap(parseFloat(data.lat), parseFloat(data.log));
+	            }.bind(this),
+	            error: function (xhr, status, err) {
+	                console.error("failed to load Circle");
+	            }.bind(this)
+	        });
+	    },
+	    getInitialState: function () {
+	        return {
+	            url_param: this.props.params.id,
+	            circle_image: "https://cdn2.iconfinder.com/data/icons/freecns-cumulus/16/519660-164_QuestionMark-256.png",
+	            data: []
+	        };
+	    },
+	    componentDidMount: function () {
+	        this.loadCirclesFromServer();
+	    },
 
-	  render() {
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(Navigation, null),
-	      React.createElement(
-	        Row,
-	        { className: 'sign-up-label text-align-center' },
-	        React.createElement(
-	          Col,
-	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
-	          React.createElement(
-	            'h1',
-	            null,
-	            this.state.data.name
-	          )
-	        ),
-	        React.createElement(
-	          Col,
-	          { xs: 6, xsOffset: 3, sm: 6, smOffset: 3 },
-	          React.createElement(CircleImage, { src: this.state.circle_image, circle: true, responsive: true })
-	        )
-	      ),
-	      React.createElement('br', null),
-	      React.createElement(
-	        Row,
-	        { className: 'text-align-center' },
-	        React.createElement(
-	          Col,
-	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
-	          React.createElement(
-	            'span',
-	            null,
-	            this.state.data.description
-	          )
-	        )
-	      ),
-	      React.createElement(
-	        Row,
-	        null,
-	        React.createElement(
-	          Col,
-	          { xs: 8, md: 6, xsOffset: 2, mdOffset: 3 },
-	          React.createElement(
+	    render() {
+	        return React.createElement(
 	            'div',
-	            { className: 'mapContainer' },
-	            React.createElement('div', { id: 'map', className: 'map' })
-	          )
-	        )
-	      )
-	    );
-	  }
+	            null,
+	            React.createElement(Navigation, null),
+	            React.createElement(
+	                'div',
+	                { className: 'circleProfileInfo' },
+	                React.createElement(
+	                    Col,
+	                    { xs: 12, md: 3 },
+	                    React.createElement(
+	                        Row,
+	                        { className: 'sign-up-label text-align-center' },
+	                        React.createElement(
+	                            'h1',
+	                            null,
+	                            this.state.data.name
+	                        ),
+	                        React.createElement(CircleImage, { src: this.state.circle_image, responsive: true }),
+	                        React.createElement(ModalTest, null),
+	                        React.createElement(
+	                            'span',
+	                            null,
+	                            this.state.data.description
+	                        ),
+	                        React.createElement(
+	                            Col,
+	                            { xs: 12, md: 12 },
+	                            React.createElement(
+	                                'div',
+	                                { className: 'mapContainer' },
+	                                React.createElement('div', { id: 'map', className: 'map' })
+	                            )
+	                        )
+	                    )
+	                )
+	            )
+	        );
+	    }
 	});
 
 	module.exports = CircleProfile;
@@ -58394,6 +58382,205 @@
 
 /***/ },
 /* 494 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(1);
+	var auth = __webpack_require__(224);
+	var ReactBootstrap = __webpack_require__(226);
+	var Grid = ReactBootstrap.Grid;
+	var Row = ReactBootstrap.Row;
+	var Col = ReactBootstrap.Col;
+	var Input = ReactBootstrap.Input;
+	var Button = ReactBootstrap.Button;
+	var Navbar = ReactBootstrap.Navbar;
+	var Nav = ReactBootstrap.Nav;
+	var NavItem = ReactBootstrap.NavItem;
+	var NavDropdown = ReactBootstrap.NavDropdown;
+	var MenuItem = ReactBootstrap.MenuItem;
+	var Modal = ReactBootstrap.Modal;
+	var Tooltip = ReactBootstrap.Tooltip;
+	var Popover = ReactBootstrap.Popover;
+	var OverlayTrigger = ReactBootstrap.OverlayTrigger;
+
+	var ModalExample = React.createClass({
+	  displayName: 'ModalExample',
+
+	  getInitialState() {
+	    return { showModal: false };
+	  },
+
+	  close() {
+	    this.setState({ showModal: false });
+	  },
+
+	  open() {
+	    this.setState({ showModal: true });
+	  },
+
+	  render() {
+	    const popover = React.createElement(
+	      Popover,
+	      { id: 'modal-popover', title: 'popover' },
+	      'very popover. such engagement'
+	    );
+	    const tooltip = React.createElement(
+	      Tooltip,
+	      { id: 'modal-tooltip' },
+	      'wow.'
+	    );
+
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'p',
+	        null,
+	        'Click to get the full Modal experience!'
+	      ),
+	      React.createElement(
+	        Button,
+	        {
+	          bsStyle: 'primary',
+	          bsSize: 'large',
+	          onClick: this.open
+	        },
+	        'Launch demo modal'
+	      ),
+	      React.createElement(
+	        Modal,
+	        { show: this.state.showModal, onHide: this.close },
+	        React.createElement(
+	          Modal.Header,
+	          { closeButton: true },
+	          React.createElement(
+	            Modal.Title,
+	            null,
+	            'Modal heading'
+	          )
+	        ),
+	        React.createElement(
+	          Modal.Body,
+	          null,
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Text in a modal'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Duis mollis, est non commodo luctus, nisi erat porttitor ligula.'
+	          ),
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Popover in a modal'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'there is a ',
+	            React.createElement(
+	              OverlayTrigger,
+	              { overlay: popover },
+	              React.createElement(
+	                'a',
+	                { href: '#' },
+	                'popover'
+	              )
+	            ),
+	            ' here'
+	          ),
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Tooltips in a modal'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'there is a ',
+	            React.createElement(
+	              OverlayTrigger,
+	              { overlay: tooltip },
+	              React.createElement(
+	                'a',
+	                { href: '#' },
+	                'tooltip'
+	              )
+	            ),
+	            ' here'
+	          ),
+	          React.createElement('hr', null),
+	          React.createElement(
+	            'h4',
+	            null,
+	            'Overflowing text to show scroll behavior'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Cras mattis consectetur purus sit amet fermentum. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac consectetur ac, vestibulum at eros.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor.'
+	          ),
+	          React.createElement(
+	            'p',
+	            null,
+	            'Aenean lacinia bibendum nulla sed consectetur. Praesent commodo cursus magna, vel scelerisque nisl consectetur et. Donec sed odio dui. Donec ullamcorper nulla non metus auctor fringilla.'
+	          )
+	        ),
+	        React.createElement(
+	          Modal.Footer,
+	          null,
+	          React.createElement(
+	            Button,
+	            { onClick: this.close },
+	            'Close'
+	          )
+	        )
+	      )
+	    );
+	  }
+	});
+
+	module.exports = ModalExample;
+
+/***/ },
+/* 495 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
@@ -58550,7 +58737,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(223)))
 
 /***/ },
-/* 495 */
+/* 496 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function($) {var React = __webpack_require__(1);
