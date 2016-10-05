@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
-from .models import Restaurant, Review, Foodie, Poll, Vote, ProfileImage, Circle,CircleMembership
+from .models import Restaurant, Review, Foodie, Poll, Vote, ProfileImage, Circle,CircleMembership, CircleImage
 
 from rest_framework import viewsets, response, permissions
-from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer, ProfileImageUploadSerializer, CircleSerializer, CircleMembershipSerializer
+from .serializers import UserSerializer, RestaurantSerializer, ReviewSerializer, FoodieSerializer, PollSerializer,VoteSerializer, ProfileImageUploadSerializer, CircleSerializer, CircleMembershipSerializer, CircleImageUploadSerializer
 
 from .permissions import IsStaffOrTargetUser, IsOwnerOrStaffElseReadonly_Vote, IsPollOwnerOrStaffElseReadonly_Vote, IsImageOwnerOrStaffElseReadonly
 from rest_framework.permissions import AllowAny
@@ -24,11 +24,11 @@ class UserViewSet(viewsets.ModelViewSet):
                 else IsStaffOrTargetUser()),
 
     def list(self, request, *args, **kwargs):
-        if request.method == 'GET' and 'username' in request.GET:
+        if request.method == 'GET' and 'username_starts' in request.GET:
             print("filtering on username test")
-            username = request.GET.get('username')
-            if username is not None and username != '':
-                queryset = User.objects.filter(username__startswith=(username))
+            username_starts = request.GET.get('username_starts')
+            if username_starts is not None and username_starts != '':
+                queryset = User.objects.filter(username__startswith=(username_starts))
                 serializer = UserSerializer(queryset, many=True)
                 return response.Response(serializer.data)
         else:
@@ -159,15 +159,44 @@ class VoteViewSet(viewsets.ModelViewSet):
         return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
                 else permissions.IsAuthenticated()),
 
+class CircleImageViewSet(viewsets.ModelViewSet):
+    queryset = CircleImage.objects.all()
+    serializer_class = CircleImageUploadSerializer
+    parser_classes = (MultiPartParser, FormParser,)
+    # permission_classes = (permissions.IsAuthenticated,)
+
+    # def get_permissions(self):
+    #     return (IsImageOwnerOrStaffElseReadonly() if self.request.method not in permissions.SAFE_METHODS
+    #             else permissions.IsAuthenticated()),
+
+
+    def perform_create(self, serializer):
+        print("uploading circle image")
+        print(self.request.data.get('datafile'))
+        print(self.request.FILES)
+        print('---------')
+        for key, value in self.request.FILES.iteritems():
+            print(key)
+
+
+        # print(self.request.FILES['circle_id'])
+        # print(self.request.FILES['image'])
+        circle = Circle.objects.get(id=int(self.request.data.get('circle_id')))
+        serializer.save(circle=circle,
+                       datafile=self.request.FILES['image'])
+
 class CircleViewSet(viewsets.ModelViewSet):
     queryset = Circle.objects.all()
     serializer_class = CircleSerializer
     filter_backends = (filters.DjangoFilterBackend,)
-    permission_classes = (permissions.IsAuthenticated,)
-
-    def get_permissions(self):
-        return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
-                else permissions.IsAuthenticated()),
+    # permission_classes = (permissions.IsAuthenticated,)
+    #
+    # def get_permissions(self):
+    #     return (IsOwnerOrStaffElseReadonly_Vote() if self.request.method not in permissions.SAFE_METHODS
+    #             else permissions.IsAuthenticated()),
+    def perform_update(self, serializer):
+        serializer.save()
+        return response.Response(serializer.data)
 
 class CircleMembershipViewSet(viewsets.ModelViewSet):
     queryset = CircleMembership.objects.all()

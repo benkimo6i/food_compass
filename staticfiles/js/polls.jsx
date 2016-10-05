@@ -104,6 +104,9 @@ var Poll = React.createClass({
           }.bind(this)
         });
   },
+  MoveToProfile: function (event) {
+    this.context.router.push('/app/polls/'+String(this.props.poll_id)+"/");
+  },
   getInitialState: function() {
     return {creator_username: '', selected_choice: '',vote_counts:[],vote_check:[],};
   },
@@ -210,7 +213,7 @@ var Poll = React.createClass({
       <div className="Poll">
         <Row className="text-align-center poll-row">
                 <Col xs={12} md={12}>
-                        <a><h2 className="PollName" value={this.props.url}>
+                        <a><h2 className="PollName" value={this.props.url} onClick={this.MoveToProfile}>
                           {this.props.title}
                         </h2></a>
                         <p>Added on: {this.props.added} By: {this.state.creator_username}<br/>

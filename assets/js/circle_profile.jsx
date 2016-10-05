@@ -14,6 +14,9 @@ var CmsHeader = require('./navbar');
 var ControlLabel = ReactBootstrap.ControlLabel;
 var Checkbox = ReactBootstrap.Checkbox;
 var googleMap = require('./google_map');
+var FormControlLabel = ReactBootstrap.ControlLabel;
+var CircleImage = ReactBootstrap.Image;
+var ModalTest = require('./modal_test');
 
 var Navigation = React.createClass({
     render: function() {
@@ -27,6 +30,34 @@ var Navigation = React.createClass({
 
 
 var CircleProfile = React.createClass({
+  contextTypes: {
+        router: React.PropTypes.object.isRequired
+  },
+  updateProfileImage: function(e) {
+        e.preventDefault();
+        var imageForm = this.refs.image_form;
+        console.log(imageForm);
+        var formData = new FormData(imageForm);
+
+        $.ajax({
+          url: '/api/circle_image/',
+          contentType: false,
+          processData: false,
+          type: 'POST',
+          data : formData,
+          headers: {
+                    'Authorization': 'Token ' + localStorage.token
+          },
+          success: function(data) {
+                console.log("circle image updated");
+                this.context.router.replace('/app/circles/'+String(this.state.url_param)+'/');
+          }.bind(this),
+          error: function(xhr, status, err) {
+            console.log("circle image error");
+            console.error(this.props.url, status, err.toString());
+          }.bind(this)
+        });
+  },
   initTripMap: function (lat, lng) {
         var geocoder = new google.maps.Geocoder();
         var latlng = new google.maps.LatLng(lat, lng);
@@ -53,6 +84,7 @@ var CircleProfile = React.createClass({
           },
           success: function(data) {
             this.setState({data: data});
+            this.setState({circle_image: data.circleimage_set[0].datafile});
             console.log(data);
             this.initTripMap(parseFloat(data.lat), parseFloat(data.log));
           }.bind(this),
@@ -64,6 +96,7 @@ var CircleProfile = React.createClass({
       getInitialState: function() {
         return {
             url_param: this.props.params.id,
+            circle_image: "https://cdn2.iconfinder.com/data/icons/freecns-cumulus/16/519660-164_QuestionMark-256.png",
             data:[],
         };
       },
@@ -76,12 +109,17 @@ var CircleProfile = React.createClass({
     return (
       <div>
         <Navigation/>
+        <ModalTest/>
         <Row className='sign-up-label text-align-center'>
               <Col xs={8} md={6} xsOffset={2} mdOffset={3}>
                    <h1>{this.state.data.name}</h1>
-                   <br/>
+              </Col>
+
+              <Col xs={6} xsOffset={3} sm={6} smOffset={3}>
+                   <CircleImage src={this.state.circle_image} circle responsive/>
               </Col>
         </Row>
+        <br/>
 
         <Row className='text-align-center'>
               <Col xs={8} md={6} xsOffset={2} mdOffset={3}>

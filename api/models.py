@@ -94,6 +94,7 @@ class Vote(models.Model):
     poll = models.ForeignKey(Poll)
     choice = models.ForeignKey(Restaurant)
 
+
 class Circle(models.Model):
     name = models.CharField(max_length=140, null=False)
     description = models.CharField(max_length=140, null=True)
@@ -108,6 +109,21 @@ class Circle(models.Model):
 
     def __unicode__(self):
         return self.name
+
+def circle_image_upload_to(instance, filename):
+    title = instance.circle.name+'_'+str(instance.circle.id)
+    print("Image title: "+title)
+    slug = slugify(title)
+    return "circle_images/%s/%s" %(slug, filename)
+
+class CircleImage(models.Model):
+    circle = models.ForeignKey(Circle)
+    datafile = models.ImageField(upload_to=circle_image_upload_to)
+    added = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __unicode__(self):
+        return str(self.datafile)
 
 class CircleMembership(models.Model):
     foodie = models.ForeignKey(Foodie)

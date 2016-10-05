@@ -24,8 +24,17 @@ var CmsHeader = React.createClass({
     returnHome: function() {
         this.context.router.push('/app/');
     },
+    contextTypes: {
+        router: React.PropTypes.object.isRequired
+    },
     goAddRestaurant: function() {
         this.context.router.push('/app/add_restaurant/');
+    },
+    goRestaurantListing: function() {
+        this.context.router.push('/app/restaurant/');
+    },
+    goPollListing: function() {
+        this.context.router.push('/app/polls/');
     },
     goToFoodieProfile: function() {
         var foodie_key = this.state.user.foodie_id;
@@ -33,9 +42,6 @@ var CmsHeader = React.createClass({
     },
     goAddPoll: function() {
         this.context.router.push('/app/add_poll/');
-    },
-    contextTypes: {
-        router: React.PropTypes.object.isRequired
     },
 
     handleSubmit: function(e) {
@@ -102,8 +108,8 @@ var CmsHeader = React.createClass({
                         <Navbar.Collapse>
                           <Nav>
                             <NavItem eventKey={1} onClick={this.returnHome}>Home</NavItem>
-                            <NavItem eventKey={2} onClick={this.goAddPoll}>Add Poll</NavItem>
-                            <NavItem eventKey={3} onClick={this.goAddRestaurant}>Add Restaurants</NavItem>
+                            <NavItem eventKey={2} onClick={this.goPollListing}>Polls</NavItem>
+                            <NavItem eventKey={3} onClick={this.goRestaurantListing}>Restaurants</NavItem>
 
                           </Nav>
                           <Nav pullRight>
@@ -126,7 +132,8 @@ var CmsHeader = React.createClass({
                         <Navbar.Collapse>
                         <Nav>
                             <NavItem eventKey={1} onClick={this.returnHome}>Home</NavItem>
-                            <NavItem eventKey={2} onClick={this.goAddPoll}>Add Poll</NavItem>
+                            <NavItem eventKey={2} onClick={this.goPollListing}>Polls</NavItem>
+                            <NavItem eventKey={3} onClick={this.goRestaurantListing}>Restaurants</NavItem>
 
                           </Nav>
 

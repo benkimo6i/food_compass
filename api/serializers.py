@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from django.contrib.auth.models import User
 
-from .models import Restaurant, Review,Foodie, Poll, Vote, ProfileImage, Circle, CircleMembership
+from .models import Restaurant, Review,Foodie, Poll, Vote, ProfileImage, Circle, CircleMembership, CircleImage
 
 from rest_framework.fields import CurrentUserDefault
 
@@ -278,16 +278,28 @@ class VoteSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class CircleImageUploadSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CircleImage
+        read_only_fields = ('added','updated','circle', 'url', 'datafile')
+    def create(self, validated_data):
+        print(validated_data)
+        images = CircleImage.objects.filter(circle = validated_data['circle'])
+        if len(images) > 0:
+            CircleImage.objects.filter(circle = validated_data['circle']).delete()
+        return CircleImage.objects.create(**validated_data)
+
 
 class CircleSerializer(serializers.ModelSerializer):
     lat = None
     log = None
     master = FoodieSerializer(read_only=True)
+    circleimage_set = CircleImageUploadSerializer(many=True, read_only=True)
     # foodies = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Circle
-        fields = ('name','description','street','city','state','master', 'lat','log')
+        fields = ('id','url','name','description','street','city','state','master', 'lat','log','circleimage_set')
         read_only_fields = ('id','url','added', 'master', 'lat','log')
 
     def create(self, validated_data):
@@ -305,28 +317,61 @@ class CircleSerializer(serializers.ModelSerializer):
         circle.save()
         return circle
 
+    def update(self, instance, validated_data):
+        # Simply set each attribute on the instance, and then save it.
+        # Note that unlike `.create()` we don't need to treat many-to-many
+        # relationships as being a special case. During updates we already
+        # have an instance pk for the relationships to be associated with.
+        print("calling update/patch serializer method")
+        print(validated_data)
+
+        if u'name' in validated_data:
+                if validated_data['name'] != instance.name:
+                    circle = Circle.objects.filter(name=validated_data['name'])
+                    if circle:
+                        raise serializers.ValidationError("circle exist")
+                        return instance
+                    else:
+                        print("setting new circle name")
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+            if self.lat and self.log:
+                instance.lat = self.lat
+                instance.log = self.log
+        instance.save()
+        print(instance)
+        return instance
+
     def validate(self, data):
         """
         Check that the start is before the stop.
         """
-        gmaps = googlemaps.Client(key='AIzaSyBY34yk3QSyUtWPfIgBw3mFVVV2XSp6SQw')
-        try:
-            address = str(data['street'].encode('ascii','ignore')) +  str(data['city'].encode('ascii','ignore')) +  str(data['state'].encode('ascii','ignore'))
-        except:
-            address = data['street']
-        # Geocoding an address
-        if not isinstance(address, str):
-            geocode_result = gmaps.geocode(address.encode('ascii','ignore'))
-        else:
-            geocode_result = gmaps.geocode(address)
+        if all (k in data for k in ("street","city","state")):
+            print("starting gmap service")
+            gmaps = googlemaps.Client(key='AIzaSyBY34yk3QSyUtWPfIgBw3mFVVV2XSp6SQw')
+            print("starting gmap service 2")
+            try:
+                address = str(data['street'].encode('ascii','ignore')) +  str(data['city'].encode('ascii','ignore')) +  str(data['state'].encode('ascii','ignore'))
+            except:
+                address = data['street']
+            print("starting gmap service 3")
+            # Geocoding an address
+            if not isinstance(address, str):
+                geocode_result = gmaps.geocode(address.encode('ascii','ignore'))
+            else:
+                geocode_result = gmaps.geocode(address)
+            print("starting gmap service 4")
+            if not geocode_result:
+                raise serializers.ValidationError("invalid address & location not found")
+            else:
+                result = geocode_result[0]
+                self.log = result['geometry']['location']['lng']
+                self.lat = result['geometry']['location']['lat']
+                print("finished gmap service")
 
-        if not geocode_result:
-            raise serializers.ValidationError("invalid address & location not found")
-        else:
-            result = geocode_result[0]
-            self.log = result['geometry']['location']['lng']
-            self.lat = result['geometry']['location']['lat']
         return data
+
+
 
 class CircleMembershipSerializer(serializers.ModelSerializer):
     circle_name = serializers.ReadOnlyField(source="circle.name")

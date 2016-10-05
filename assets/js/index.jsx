@@ -15,6 +15,8 @@ var pollList = require('./pollListing')
 var Poll = require('./poll_detail')
 var AddCircle = require('./add_circle')
 var CircleProfile = require('./circle_profile')
+var Circle_page = require('./circle_page')
+var CircleEdit = require('./edit_circle')
 
 
 
@@ -45,7 +47,9 @@ ReactDOM.render(
                     <Router.Route path='/app/polls/' component={pollList} />
                     <Router.Route path='/app/polls/:id' component={Poll} />
                     <Router.Route path='/app/add_circle/' component={AddCircle} />
+                    <Router.Route path='/app/circles/' component={Circle_page} />
                     <Router.Route path='/app/circles/:id' component={CircleProfile} />
+                    <Router.Route path='/app/edit_circles/:id' component={CircleEdit} />
 
                 </Router.Route>
             </Router.Route>

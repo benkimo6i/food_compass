@@ -23,17 +23,12 @@ body {
 .hidden { display:none; }
 
 .mapContainer {
-        background-color:white;
-        right: 0;
-        width: inherit;
-            height: 275px;
-        position: fixed;
-        z-index: 8;
+        background-color:pink;
+
+            height: 200px;
 }
 
 .map {
-        height: 275px;
-        width:inherit;
-        position: absolute;
-        z-index: 9;
+        height: 200px;
+
 }
